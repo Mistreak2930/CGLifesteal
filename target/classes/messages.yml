@@ -1,0 +1,67 @@
+# Lifesteal Plugin - Messages Configuration
+# Edit these messages to customize the plugin output!
+# Use § for color codes, e.g., §a = green, §c = red, §e = yellow
+# Color codes: 0-9 = numbers, a-f = letters, r = reset
+
+# Prefixes
+prefix:
+  main: "§6[Lifesteal]"
+  team: "§6[Team]"
+  shop: "§6[Shop]"
+
+# General Messages
+general:
+  no-permission: "§cYou don't have permission!"
+  player-not-found: "§cPlayer not found!"
+  invalid-amount: "§cInvalid amount!"
+  only-players: "§cOnly players can use this command!"
+
+# Hearts Messages
+hearts:
+  view-own: "§aYou have §e{hearts}§a hearts"
+  view-other: "§a{player} has §e{hearts}§a hearts"
+  give-success: "§aGave §e{amount}§a hearts to §e{player}§a (§e{old}§a -> §e{new}§a)"
+  give-notify: "§e{admin}§a gave you §e{amount}§a hearts!"
+  take-success: "§aRemoved §e{amount}§a hearts from §e{player}§a (§e{old}§a -> §e{new}§a)"
+  take-notify: "§e{admin}§a removed §c{amount}§a hearts from you!"
+
+# Withdraw Messages
+withdraw:
+  success: "§aWithdrew §e{amount}§a hearts! You now have §e{remaining}§a hearts"
+  success-dropped: "§aWithdrew §e{amount}§a hearts! (dropped due to full inventory)"
+  not-enough: "§cYou don't have enough hearts! You have §e{hearts}§c hearts"
+  invalid-amount: "§cAmount must be positive!"
+
+# Deposit Messages
+deposit:
+  success: "§aDeposited §e{amount}§a hearts! You now have §e{total}§a hearts"
+  invalid-item: "§cYou must hold a heart item!"
+
+# Shop Messages
+shop:
+  opened: "§aOpened Heart Shop!"
+  no-permission: "§cYou don't have permission to buy this tier!"
+  not-enough-points: "§cYou don't have enough points! You need §e{price}§c points but only have §e{points}§c"
+  exceeds-max: "§cAdding that many hearts would exceed the maximum of {max} hearts!"
+  success: "§aYou bought §e{hearts}§a hearts for §e{price}§a points! You now have §e{total}§a hearts"
+
+# Death Messages
+death:
+  no-killer: "§e{player}§c lost a heart! ❤"
+  with-killer: "§e{victim}§c was defeated by §e{killer}§c!"
+
+# Team Messages
+team:
+  not-in-team: "§cYou're not in a team!"
+  create-success: "§aTeam §e{name}§a created successfully!"
+  create-broadcast: "§e{player}§a created a new team: §e{name}"
+  invite-success: "§aInvited §e{player}§a to team §e{team}"
+  invite-notify: "§e{inviter}§a invited you to join team §e{team}§a! Use §e/team accept {team}§a or §e/team deny {team}"
+  accept-success: "§aYou joined team §e{team}§a!"
+  accept-notify: "§e{player}§a joined the team!"
+  deny-success: "§aInvite from team §e{team}§a denied!"
+  leave-success: "§aYou left team §e{team}§a!"
+  leave-notify: "§e{player}§a left the team!"
+  no-teams: "§cNo teams exist yet!"
+  death-notify: "§c{player} was killed by {killer}!"
+  kill-notify: "§a{player} killed {victim}!"

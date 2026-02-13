@@ -1,0 +1,17 @@
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/config/MessageManager.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/commands/GiveHeartCommand.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/commands/HeartShopCommand.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/listeners/PlayerJoinListener.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/listeners/HeartShopListener.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/commands/TakeHeartCommand.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/commands/TeamChatCommand.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/gui/HeartShopGUI.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/LifestealPlugin.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/commands/WithdrawCommand.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/commands/TeamCommand.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/system/TeamManager.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/listeners/PlayerDeathListener.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/listeners/TeamChatListener.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/system/HeartManager.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/commands/HeartsCommand.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/commands/DepositCommand.java

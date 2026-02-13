@@ -1,0 +1,67 @@
+name: Lifesteal
+version: 1.0.0
+main: com.example.lifesteal.LifestealPlugin
+description: Advanced Lifesteal plugin with teams, shops, and hearts management
+authors: [Developer]
+depend: [PlayerPoints]
+softdepend: []
+
+commands:
+  hearts:
+    description: View player hearts
+    usage: /hearts [player]
+    permission: lifesteal.hearts
+    aliases: [h]
+  
+  giveheart:
+    description: Give hearts to a player
+    usage: /giveheart <player> <amount>
+    permission: lifesteal.admin
+    aliases: [gh]
+  
+  takeheart:
+    description: Take hearts from a player
+    usage: /takeheart <player> <amount>
+    permission: lifesteal.admin
+    aliases: [th]
+  
+  withdraw:
+    description: Withdraw hearts as items
+    usage: /withdraw <amount>
+    permission: lifesteal.user
+    aliases: [wd]
+  
+  deposit:
+    description: Deposit heart items back to your hearts
+    usage: /deposit
+    permission: lifesteal.user
+    aliases: [dep]
+  
+  heartshop:
+    description: Open the heart shop
+    usage: /heartshop
+    permission: lifesteal.user
+    aliases: [hshop]
+  
+  team:
+    description: Team commands
+    usage: /team <create|invite|accept|deny|list|info|leave|chat>
+    permission: lifesteal.user
+    aliases: [t]
+  
+  teamchat:
+    description: Send a message to team chat
+    usage: /teamchat <message>
+    permission: lifesteal.user
+    aliases: [tc]
+
+permissions:
+  lifesteal.user:
+    description: Allow users to use basic lifesteal commands
+    default: true
+  lifesteal.hearts:
+    description: Allow users to view hearts
+    default: true
+  lifesteal.admin:
+    description: Allow admins to give/take hearts
+    default: op

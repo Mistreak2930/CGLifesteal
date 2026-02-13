@@ -1,0 +1,32 @@
+# Lifesteal Configuration
+
+# General Settings
+settings:
+  max-hearts: 20
+  min-hearts: 0
+  default-hearts: 20
+  max-team-size: 10
+  adjust-max-health: true # If true the plugin will change player's max health to match hearts
+
+# Debug options
+debug:
+  log-stacktraces: false # When true, exceptions will be appended to plugins/Lifesteal/debug.log
+
+# Heart Shop Prices (in PlayerPoints)
+heartshop:
+  prices:
+    1-heart: 10
+    5-hearts: 45
+    10-hearts: 80
+    20-hearts: 150
+
+# Death Settings
+death:
+  hearts-lost-on-death: 1
+  hearts-gained-on-kill: 1
+  killer-required: false
+
+# Team Settings
+teams:
+  max-team-name-length: 16
+  min-team-name-length: 3
