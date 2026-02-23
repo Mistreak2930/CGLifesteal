@@ -1,4 +1,4 @@
-# Lifesteal Plugin 1.2.0
+# Lifesteal Plugin 1.3.0
 
 A comprehensive Lifesteal plugin for Minecraft 1.12.2 servers featuring hearts management, team systems with wars, lottery, daily rewards, bundles system, and dynamic GUI interfaces.
 
@@ -301,13 +301,19 @@ The compiled JAR will be in the `target/` directory.
 
 ## 📊 Version Info
 
-- **Plugin Version**: 1.2.0
+- **Plugin Version**: 1.3.0
 - **Minecraft Version**: 1.12.2
 - **API**: Spigot/Bukkit
 - **Java**: 8+
 - **Dependencies**: Vault, PlayerPoints, PlaceholderAPI (optional)
 
-## 📝 Changelog (v1.2.0)
+## 📝 Changelog
+
+### v1.3.0 (Current)
+- 📦 Updated version to 1.3.0
+- 📝 Documentation improvements
+
+### v1.2.0
 
 ### New Features
 - ✨ **Main Menu System** - Centralized GUI hub with quick access to all features
