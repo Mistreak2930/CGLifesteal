@@ -2,31 +2,173 @@
 
 # General Settings
 settings:
+  # Starting hearts for new players
+  default-hearts: 10
+  
+  # Maximum hearts a player can have
   max-hearts: 20
+  
+  # Minimum hearts a player can have (dead if reached)
   min-hearts: 0
-  default-hearts: 20
+  
+  # If true, plugin adjusts player max health to match hearts
+  adjust-max-health: true
+  
+  # Maximum team size
   max-team-size: 10
-  adjust-max-health: true # If true the plugin will change player's max health to match hearts
+  
+  # Ban players when they reach 0 hearts
+  ban-on-zero-hearts: true
+  
+  # Debug mode - logs extra information
+  debug: false
 
-# Debug options
-debug:
-  log-stacktraces: false # When true, exceptions will be appended to plugins/Lifesteal/debug.log
-
-# Heart Shop Prices (in PlayerPoints)
-heartshop:
-  prices:
-    1-heart: 10
-    5-hearts: 45
-    10-hearts: 80
-    20-hearts: 150
-
-# Death Settings
-death:
+# Heart System Settings
+hearts:
+  # Hearts lost on death (0 to disable)
   hearts-lost-on-death: 1
+  
+  # Hearts gained when killing another player
   hearts-gained-on-kill: 1
+  
+  # Whether a killer is required to gain hearts
   killer-required: false
+  
+  # Custom heart item material (RED_DYE)
+  item:
+    material: RED_DYE
+    name: "§cHeart"
+    lore:
+      - "§7Use this to gain"
+      - "§7+1 Max Heart"
+    
+    # Amount of max health increased per item used
+    health-increase-per-item: 2
+
+# Lottery Settings
+lottery:
+  # Price of one lottery ticket (in money/PlayerPoints)
+  ticket-price: 100
+  
+  # Whether lottery is enabled
+  enabled: true
+
+# Daily Reward Settings
+daily-reward:
+  # Money reward per day
+  money: 100
+  
+  # Player points reward per day
+  points: 100
+  
+  # Whether daily rewards are enabled
+  enabled: true
 
 # Team Settings
 teams:
-  max-team-name-length: 16
+  # Minimum team name length
   min-team-name-length: 3
+  
+  # Maximum team name length
+  max-team-name-length: 16
+  
+  # Maximum team size
+  max-team-size: 10
+  
+  # Team chat settings
+  chat:
+    # Prefix for team chat messages
+    prefix: "§6[Team]"
+    
+    # Whether team chat is enabled
+    enabled: true
+    
+    # Messages starting with this character go to team chat
+    activation-character: "!"
+
+# Team Wars Settings
+team-wars:
+  # Whether team wars are enabled
+  enabled: true
+  
+  # Money reward per enemy team member (given to each winning team member)
+  reward-per-member: 1000.0
+  
+  # Require both team leaders to accept before war begins
+  require-both-leaders: true
+  
+  # Cooldown in minutes after a war ends before team can war again
+  cooldown-minutes: 60
+
+# GUI Settings
+gui:
+  # Team GUI settings
+  team:
+    # Whether team GUI is enabled
+    enabled: true
+    
+    # Inventory size (27 or 36 for 3x9 or 4x9 chest)
+    inventory-size: 27# Death Settings
+death:
+  # Hearts lost on death (0 to disable)
+  hearts-lost-on-death: 1
+  
+  # Hearts gained on kill
+  hearts-gained-on-kill: 1
+  
+  # Whether a killer is required to gain hearts
+  killer-required: false
+
+# Bundle Settings
+bundles:
+  # Maximum bundles per day
+  max-per-day: 3
+  
+  # Time in hours until bundles reset (24 hours)
+  reset-time-hours: 24
+  
+  # Time in hours until reward refreshes (12 hours)
+  reward-refresh-hours: 12
+  
+  # Possible rewards in bundles
+  possible-rewards:
+    money:
+      type: "MONEY"
+      min-amount: 100
+      max-amount: 500
+    points:
+      type: "POINTS"
+      min-amount: 50
+      max-amount: 250
+    hearts:
+      type: "HEARTS"
+      min-amount: 1
+      max-amount: 3
+    orbits:
+      type: "ORBITS"
+      min-amount: 10
+      max-amount: 50
+    diamonds:
+      type: "ITEM_DIAMOND"
+      min-amount: 1
+      max-amount: 5
+    emeralds:
+      type: "ITEM_EMERALD"
+      min-amount: 1
+      max-amount: 10
+    iron:
+      type: "ITEM_IRON_INGOT"
+      min-amount: 5
+      max-amount: 15
+    gold:
+      type: "ITEM_GOLD_INGOT"
+      min-amount: 3
+      max-amount: 12
+
+# Debug options
+debug:
+  # When true, exceptions will be logged to plugins/Lifesteal/debug.log
+  log-stacktraces: false
+  
+  # Enable debug logging
+  enable-logging: false

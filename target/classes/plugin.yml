@@ -1,15 +1,16 @@
 name: Lifesteal
-version: 1.0.0
+version: 1.2.0
 main: com.example.lifesteal.LifestealPlugin
-description: Advanced Lifesteal plugin with teams, shops, and hearts management
+description: Advanced Lifesteal plugin with teams, shops, hearts management, lottery, daily rewards, and GUI
 authors: [Developer]
 depend: [PlayerPoints]
-softdepend: []
+softdepend: [Vault, PlaceholderAPI]
 
 commands:
+  # Hearts Commands
   hearts:
-    description: View player hearts
-    usage: /hearts [player]
+    description: View and manage player hearts
+    usage: /hearts [player|give|take|set|get|revive] [args...]
     permission: lifesteal.hearts
     aliases: [h]
   
@@ -37,23 +38,183 @@ commands:
     permission: lifesteal.user
     aliases: [dep]
   
-  heartshop:
-    description: Open the heart shop
-    usage: /heartshop
-    permission: lifesteal.user
-    aliases: [hshop]
-  
+  # Team Commands
   team:
-    description: Team commands
-    usage: /team <create|invite|accept|deny|list|info|leave|chat>
+    description: Team management commands
+    usage: /team <create|delete|invite|join|accept|deny|list|info|leave|chat|togglechat|gui> [args...]
     permission: lifesteal.user
     aliases: [t]
   
   teamchat:
-    description: Send a message to team chat
+    description: Send message to team chat
     usage: /teamchat <message>
     permission: lifesteal.user
     aliases: [tc]
+  
+  # Economy Commands
+  lottery:
+    description: Open the lottery system
+    usage: /lottery
+    permission: lifesteal.user
+    aliases: [lotto]
+  
+  dailyreward:
+    description: Open the daily reward system
+    usage: /dailyreward
+    permission: lifesteal.user
+    aliases: [daily, dr]
+  
+  lifestealreload:
+    description: Reload plugin configuration and managers
+    usage: /lifestealreload
+    permission: lifesteal.admin.reload
+    aliases: [lsr]
+
+  orbits:
+    description: View and manage orbits
+    usage: /orbits <see|give|take> [player] [amount]
+    permission: lifesteal.orbits
+    aliases: [orb]
+
+  menu:
+    description: Open the main menu GUI
+    usage: /menu
+    permission: lifesteal.user
+    aliases: [mainmenu, hub]
+
+  teamwar:
+    description: Manage team wars
+    usage: /teamwar <declare|accept|deny|info|list> [teamName]
+    permission: lifesteal.user
+    aliases: [war, twar]
+
+permissions:
+  lifesteal.*:
+    description: Lifesteal permission root
+    children:
+      lifesteal.user: true
+      lifesteal.admin: true
+      lifesteal.hearts: true
+  
+  lifesteal.user:
+    description: Basic Lifesteal user permissions
+    default: true
+    children:
+      lifesteal.hearts: true
+      lifesteal.withdraw: true
+      lifesteal.deposit: true
+      lifesteal.team.create: true
+      lifesteal.team.invite: true
+      lifesteal.team.accept: true
+      lifesteal.team.deny: true
+      lifesteal.team.join: true
+      lifesteal.team.leave: true
+      lifesteal.team.list: true
+      lifesteal.team.info: true
+      lifesteal.team.delete: true
+      lifesteal.team.chat: true
+      lifesteal.team.gui: true
+      lifesteal.lottery: true
+      lifesteal.daily-reward: true
+      lifesteal.orbits: true
+      lifesteal.menu: true
+      lifesteal.bundles: true
+      lifesteal.teamwar: true
+  
+  lifesteal.admin:
+    description: Lifesteal admin permissions
+    default: op
+    children:
+      lifesteal.*: true
+  
+  lifesteal.admin.reload:
+    description: Reload plugin configuration
+    default: op
+  
+  lifesteal.hearts:
+    description: View hearts
+    default: true
+  
+  lifesteal.withdraw:
+    description: Withdraw hearts as items
+    default: true
+  
+  lifesteal.deposit:
+    description: Deposit heart items
+    default: true
+  
+  lifesteal.lottery:
+    description: Access lottery system
+    default: true
+  
+  lifesteal.daily-reward:
+    description: Claim daily rewards
+    default: true
+  
+  lifesteal.team.create:
+    description: Create teams
+    default: true
+  
+  lifesteal.team.invite:
+    description: Invite players to teams
+    default: true
+  
+  lifesteal.team.accept:
+    description: Accept team invites
+    default: true
+  
+  lifesteal.team.deny:
+    description: Deny team invites
+    default: true
+  
+  lifesteal.team.join:
+    description: Join teams
+    default: true
+  
+  lifesteal.team.leave:
+    description: Leave teams
+    default: true
+  
+  lifesteal.team.list:
+    description: List all teams
+    default: true
+  
+  lifesteal.team.info:
+    description: View team information
+    default: true
+  
+  lifesteal.team.delete:
+    description: Delete teams (owner only)
+    default: true
+  
+  lifesteal.team.chat:
+    description: Use team chat
+    default: true
+  
+  lifesteal.team.gui:
+    description: Open team GUI
+    default: true
+    aliases: [tc]
+
+  lifesteal.orbits:
+    description: View orbits
+    default: true
+
+  lifesteal.menu:
+    description: Open main menu
+    default: true
+
+  lifesteal.bundles:
+    description: Access bundle system
+    default: true
+
+  lifesteal.teamwar:
+    description: Use team wars
+    default: true
+
+  lifesteal.orbits.admin:
+    description: Give or take orbits
+    default: op
 
 permissions:
   lifesteal.user:
@@ -64,4 +225,12 @@ permissions:
     default: true
   lifesteal.admin:
     description: Allow admins to give/take hearts
+    default: op
+
+  lifesteal.orbits:
+    description: Allow users to view orbits
+    default: true
+
+  lifesteal.orbits.admin:
+    description: Allow admins to give/take orbits
     default: op

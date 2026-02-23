@@ -5,9 +5,8 @@
 
 # Prefixes
 prefix:
-  main: "§6[Lifesteal]"
+  main: "§8[§cLifesteal§8]"
   team: "§6[Team]"
-  shop: "§6[Shop]"
 
 # General Messages
 general:
@@ -15,6 +14,14 @@ general:
   player-not-found: "§cPlayer not found!"
   invalid-amount: "§cInvalid amount!"
   only-players: "§cOnly players can use this command!"
+  command-success: "§aCommand executed successfully!"
+  command-failed: "§cCommand failed! Check console for errors."
+  kick-message: "§cYou have been removed from the server!"
+  
+# Ban Messages
+ban:
+  ran-out-of-hearts: "You ran out of hearts"
+  notification: "§c{player} ran out of hearts and has been banned!"
 
 # Hearts Messages
 hearts:
@@ -24,6 +31,12 @@ hearts:
   give-notify: "§e{admin}§a gave you §e{amount}§a hearts!"
   take-success: "§aRemoved §e{amount}§a hearts from §e{player}§a (§e{old}§a -> §e{new}§a)"
   take-notify: "§e{admin}§a removed §c{amount}§a hearts from you!"
+  set-success: "§aSet hearts for §e{player}§a to §e{amount}"
+  set-notify: "§aYour hearts were set to §e{amount}§a!"
+  reset-all: "§aReset all players' hearts to §e10"
+  reset-notify: "§aAll players' hearts have been reset to §e10"
+  max-hearts: "§cCannot exceed maximum of §e{max}§c hearts!"
+  min-hearts: "§cHearts cannot go below §e0"
 
 # Withdraw Messages
 withdraw:
@@ -37,18 +50,39 @@ deposit:
   success: "§aDeposited §e{amount}§a hearts! You now have §e{total}§a hearts"
   invalid-item: "§cYou must hold a heart item!"
 
-# Shop Messages
-shop:
-  opened: "§aOpened Heart Shop!"
-  no-permission: "§cYou don't have permission to buy this tier!"
-  not-enough-points: "§cYou don't have enough points! You need §e{price}§c points but only have §e{points}§c"
-  exceeds-max: "§cAdding that many hearts would exceed the maximum of {max} hearts!"
-  success: "§aYou bought §e{hearts}§a hearts for §e{price}§a points! You now have §e{total}§a hearts"
+# Orbits Messages
+orbits:
+  view-self: "§aYou have §e{orbits}§a orbits"
+  view-other: "§a{player} has §e{orbits}§a orbits"
+  give-success: "§aGave §e{amount}§a orbits to §e{player}§a (Total: §e{total}§a)"
+  give-notify: "§e{admin}§a gave you §e{amount}§a orbits! (Total: §e{total}§a)"
+  take-success: "§aRemoved §e{amount}§a orbits from §e{player}§a (Total: §e{total}§a)"
+  take-notify: "§e{admin}§a removed §c{amount}§a orbits from you! (Total: §e{total}§a)"
 
 # Death Messages
 death:
-  no-killer: "§e{player}§c lost a heart! ❤"
-  with-killer: "§e{victim}§c was defeated by §e{killer}§c!"
+  no-killer:
+    - "§e{player}§c lost a heart to the void!"
+    - "§e{player}§c couldn't escape fate!"
+    - "§e{player}§c slipped away... and a heart too!"
+    - "§e{player}§c met an untimely end!"
+    - "§e{player}§c's adventure came to an end!"
+    - "§e{player}§c was taken by the unknown!"
+    - "§c❤ §e{player}§c lost a heart!"
+    - "§e{player}§c fell to the void!"
+    - "§e{player}§c respects nature's power!"
+  with-killer:
+    - "§e{victim}§c was defeated by §e{killer}§c!"
+    - "§e{killer}§c claimed a heart from §e{victim}§c!"
+    - "§e{victim}§c fell to §e{killer}§c's blade!"
+    - "§e{victim}§c was eliminated by §e{killer}§c!"
+    - "§e{killer}§c struck down §e{victim}§c!"
+    - "§e{victim}§c couldn't match §e{killer}§c!"
+    - "§e{killer}§c overpowered §e{victim}§c!"
+    - "§c❤ §e{killer}§c defeated §e{victim}§c!"
+    - "§e{victim}§c lost to §e{killer}§c's combat!"
+    - "§e{victim}§c was outmatched by §e{killer}§c!"
+    - "§e{killer}§c proved superior to §e{victim}§c!"
 
 # Team Messages
 team:

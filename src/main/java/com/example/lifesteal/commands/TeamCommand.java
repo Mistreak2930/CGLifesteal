@@ -1,6 +1,7 @@
 package com.example.lifesteal.commands;
 
 import com.example.lifesteal.LifestealPlugin;
+import com.example.lifesteal.gui.TeamGUI;
 import com.example.lifesteal.system.TeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -8,12 +9,18 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * Command handler for /team command
+ * Supports team creation, management, and GUI operations
+ */
 public class TeamCommand implements CommandExecutor {
 
     private LifestealPlugin plugin;
+    private TeamGUI teamGUI;
 
     public TeamCommand(LifestealPlugin plugin) {
         this.plugin = plugin;
+        this.teamGUI = new TeamGUI(plugin);
     }
 
     @Override
@@ -36,8 +43,12 @@ public class TeamCommand implements CommandExecutor {
         switch (subcommand) {
             case "create":
                 return handleCreate(player, args, teamManager);
+            case "delete":
+                return handleDelete(player, args, teamManager);
             case "invite":
                 return handleInvite(player, args, teamManager);
+            case "join":
+                return handleJoin(player, args, teamManager);
             case "accept":
                 return handleAccept(player, args, teamManager);
             case "deny":
@@ -48,6 +59,12 @@ public class TeamCommand implements CommandExecutor {
                 return handleList(player, teamManager);
             case "info":
                 return handleInfo(player, args, teamManager);
+            case "chat":
+                return handleChat(player, args);
+            case "togglechat":
+                return handleToggleChat(player);
+            case "gui":
+                return handleGUI(player, teamGUI);
             default:
                 showTeamHelp(player);
                 return true;
@@ -70,6 +87,48 @@ public class TeamCommand implements CommandExecutor {
             player.sendMessage("§c[Team] Failed to create team! (Already in a team, invalid name, or team exists)");
             return true;
         }
+    }
+
+    /**
+     * Handle /team delete <name>
+     */
+    private boolean handleDelete(Player player, String[] args, TeamManager teamManager) {
+        if (args.length != 2) {
+            player.sendMessage("§c[Team] Usage: /team delete <name>");
+            return true;
+        }
+
+        String teamName = args[1];
+        TeamManager.Team team = teamManager.getTeam(teamName);
+
+        if (team == null) {
+            player.sendMessage("§c[Team] Team not found!");
+            return true;
+        }
+
+        if (!team.getLeader().equals(player.getUniqueId())) {
+            player.sendMessage("§c[Team] Only the team owner can delete the team!");
+            return true;
+        }
+
+        // Notify all members
+        for (java.util.UUID memberUUID : team.getMembers()) {
+            Player member = Bukkit.getPlayer(memberUUID);
+            if (member != null) {
+                member.sendMessage("§c[Team] Your team has been disbanded by the owner!");
+            }
+        }
+
+        // Remove all members
+        for (java.util.UUID memberUUID : new java.util.ArrayList<>(team.getMembers())) {
+            Player member = Bukkit.getPlayer(memberUUID);
+            if (member != null) {
+                teamManager.leaveTeam(member);
+            }
+        }
+
+        player.sendMessage("§6[Team] §aTeam deleted successfully!");
+        return true;
     }
 
     private boolean handleInvite(Player player, String[] args, TeamManager teamManager) {
@@ -205,11 +264,109 @@ public class TeamCommand implements CommandExecutor {
     private void showTeamHelp(Player player) {
         player.sendMessage("§6[Team] Available commands:");
         player.sendMessage("§a  /team create <name> §e- Create a new team");
+        player.sendMessage("§a  /team delete <name> §e- Delete your team (owner only)");
         player.sendMessage("§a  /team invite <player> §e- Invite a player");
+        player.sendMessage("§a  /team join <name> §e- Join a team");
         player.sendMessage("§a  /team accept <team> §e- Accept an invite");
         player.sendMessage("§a  /team deny <team> §e- Deny an invite");
         player.sendMessage("§a  /team list §e- List all teams");
         player.sendMessage("§a  /team info §e- View team info");
         player.sendMessage("§a  /team leave §e- Leave your team");
+        player.sendMessage("§a  /team chat <message> §e- Send to team chat");
+        player.sendMessage("§a  /team togglechat §e- Toggle team chat mode");
+        player.sendMessage("§a  /team gui §e- Open team management GUI");
+    }
+
+    /**
+     * Handle /team join <name>
+     */
+    private boolean handleJoin(Player player, String[] args, TeamManager teamManager) {
+        if (args.length != 2) {
+            player.sendMessage("§c[Team] Usage: /team join <name>");
+            return true;
+        }
+
+        String teamName = args[1];
+        TeamManager.Team team = teamManager.getTeam(teamName);
+
+        if (team == null) {
+            player.sendMessage("§c[Team] Team not found!");
+            return true;
+        }
+
+        if (teamManager.getPlayerTeam(player) != null) {
+            player.sendMessage("§c[Team] You're already in a team!");
+            return true;
+        }
+
+        // Check if player was invited
+        if (team.hasInvite(player.getUniqueId())) {
+            return handleAccept(player, new String[]{"accept", teamName}, teamManager);
+        } else {
+            player.sendMessage("§c[Team] You need an invite to join this team!");
+            return true;
+        }
+    }
+
+    /**
+     * Handle /team chat <message>
+     */
+    private boolean handleChat(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("§c[Team] Usage: /team chat <message>");
+            return true;
+        }
+
+        TeamManager.Team team = plugin.getTeamManager().getPlayerTeam(player);
+        if (team == null) {
+            player.sendMessage("§c[Team] You're not in a team!");
+            return true;
+        }
+
+        // Build the message
+        StringBuilder message = new StringBuilder();
+        for (int i = 1; i < args.length; i++) {
+            message.append(args[i]).append(" ");
+        }
+
+        // Send to all team members
+        String fullMessage = "§6[Team] §e" + player.getName() + "§a: " + message.toString();
+        for (java.util.UUID memberUUID : team.getMembers()) {
+            Player member = Bukkit.getPlayer(memberUUID);
+            if (member != null && member.isOnline()) {
+                member.sendMessage(fullMessage);
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Handle /team togglechat
+     */
+    private boolean handleToggleChat(Player player) {
+        TeamManager.Team team = plugin.getTeamManager().getPlayerTeam(player);
+        if (team == null) {
+            player.sendMessage("§c[Team] You're not in a team!");
+            return true;
+        }
+
+        player.sendMessage("§6[Team] §aTeam chat mode toggled!");
+        player.sendMessage("§a(Note: Full team chat mode implementation requires additional tracking)");
+        return true;
+    }
+
+    /**
+     * Handle /team gui
+     */
+    private boolean handleGUI(Player player, TeamGUI gui) {
+        TeamManager.Team team = plugin.getTeamManager().getPlayerTeam(player);
+        if (team == null) {
+            player.sendMessage("§c[Team] You're not in a team!");
+            return true;
+        }
+
+        gui.openTeamGUI(player);
+        return true;
     }
 }

@@ -23,67 +23,81 @@ public class HeartShopGUI {
     }
 
     public void open() {
-        Inventory inventory = Bukkit.createInventory(null, 54, "§c❤ Heart Shop - Select Your Package");
+        Inventory inventory = Bukkit.createInventory(null, 54, "§c❤ Heart Emporium ❤");
 
-        // Fill borders with decorative items
-        ItemStack border = createBorder();
+        ItemStack background = createPane((short) 15, " ");
+        for (int i = 0; i < 54; i++) {
+            inventory.setItem(i, background);
+        }
+
+        // Top border - accent colors
+        ItemStack topAccent = createPane((short) 14, " ");
         for (int i = 0; i < 9; i++) {
-            inventory.setItem(i, border); // Top row
-            inventory.setItem(45 + i, border); // Bottom row
+            inventory.setItem(i, topAccent);
         }
-        for (int i = 9; i < 45; i += 9) {
-            inventory.setItem(i, border); // Left column
-            inventory.setItem(i + 8, border); // Right column
+        
+        // Bottom border - accent colors
+        ItemStack bottomAccent = createPane((short) 1, " ");
+        for (int i = 45; i < 54; i++) {
+            inventory.setItem(i, bottomAccent);
         }
 
-        // Header info section
-        ItemStack playerStats = createPlayerStats();
-        inventory.setItem(4, playerStats); // Center top
+        // Side dividers
+        ItemStack sideDivider = createPane((short) 7, " ");
+        for (int i = 9; i < 54; i += 9) {
+            inventory.setItem(i, sideDivider);
+            if (i + 8 < 54) {
+                inventory.setItem(i + 8, sideDivider);
+            }
+        }
 
-        // Value tier items - Economy
-        inventory.setItem(11, createShopItem(Material.REDSTONE_BLOCK, 1, "§c❤ Single Heart", 
+        // Get prices from config
+        int price1Heart = plugin.getConfig().getInt("heartshop.prices.1-heart", 1000);
+        int price5Hearts = plugin.getConfig().getInt("heartshop.prices.5-hearts", 4500);
+        int price10Hearts = plugin.getConfig().getInt("heartshop.prices.10-hearts", 8000);
+
+        // Header info section - Player Stats
+        ItemStack playerStats = createPlayerStats(price1Heart);
+        inventory.setItem(4, playerStats);
+
+        // Heart Shop Items - Arranged horizontally with better spacing
+        // Economy Tier - 1 Heart
+        inventory.setItem(19, createShopItem(Material.REDSTONE, 1, "§c❤ Single Heart", 
             "§eAmount: §a1 Heart",
-            "§ePrice: §610 Points",
-            "§eRatio: §a0.1 H/P",
+            "§ePrice: §6" + price1Heart + " Points",
+            "§7Cost per heart: §a" + formatPerHeart(price1Heart, 1),
             " ",
-            "§7Click to purchase"));
+            "§aEconomy Choice",
+            "§7Left-click to purchase"));
 
-        // Value tier items - Standard
-        inventory.setItem(20, createShopItem(Material.REDSTONE_BLOCK, 5, "§c❤ Heart Bundle", 
+        // Value Tier - 5 Hearts
+        inventory.setItem(22, createShopItem(Material.GOLD_INGOT, 5, "§6❤ Heart Bundle", 
             "§eAmount: §a5 Hearts",
-            "§ePrice: §645 Points",
-            "§eRatio: §a0.11 H/P §7(+10% value)",
+            "§ePrice: §6" + price5Hearts + " Points",
+            "§7Cost per heart: §a" + formatPerHeart(price5Hearts, 5),
             " ",
-            "§7Click to purchase"));
+            "§6Best Balance",
+            "§7Left-click to purchase"));
 
-        // Value tier items - bulk
-        inventory.setItem(29, createShopItem(Material.REDSTONE_BLOCK, 10, "§c❤ Heart Pack", 
+        // Premium Tier - 10 Hearts
+        inventory.setItem(25, createShopItem(Material.DIAMOND, 10, "§b❤ Heart Pack", 
             "§eAmount: §a10 Hearts",
-            "§ePrice: §680 Points",
-            "§eRatio: §a0.125 H/P §7(+25% value)",
-            "§6Best Value!",
-            "§7Click to purchase"));
+            "§ePrice: §6" + price10Hearts + " Points",
+            "§7Cost per heart: §a" + formatPerHeart(price10Hearts, 10),
+            " ",
+            "§bMassive Purchase",
+            "§7Left-click to purchase"));
 
-        // Premium tier
-        inventory.setItem(38, createShopItem(Material.REDSTONE_BLOCK, 20, "§c❤ Max Hearts §6[VIP]", 
-            "§eAmount: §a20 Hearts",
-            "§ePrice: §6150 Points",
-            "§eRatio: §a0.133 H/P §7(+33% value)",
-            "§c⭐ MAXIMUM HEARTS ⭐",
-            "§cVIP Permission Required",
-            "§7Click to purchase"));
+        // Middle row info
+        ItemStack infoItem = createInfoItem(price1Heart, price5Hearts, price10Hearts);
+        inventory.setItem(38, infoItem);
 
-        // Special offers section header
-        ItemStack specialHeader = createCategoryItem(Material.SIGN, "§e⭐ Special Offers ⭐");
-        inventory.setItem(22, specialHeader);
-
-        // Combo deal info
-        ItemStack comboInfo = createInfoItem();
-        inventory.setItem(13, comboInfo);
-
-        // Help/Info item
         ItemStack helpItem = createHelpItem();
-        inventory.setItem(31, helpItem);
+        inventory.setItem(42, helpItem);
+
+        // Tips and tricks
+        ItemStack tipsItem = createTipsItem();
+        inventory.setItem(41, tipsItem);
 
         // Close button
         ItemStack closeItem = createCloseItem();
@@ -93,11 +107,11 @@ public class HeartShopGUI {
         player.sendMessage(plugin.getMessageManager().getMessage("shop.opened"));
     }
 
-    private ItemStack createBorder() {
-        ItemStack item = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 0);
+    private ItemStack createPane(short color, String name) {
+        ItemStack item = new ItemStack(Material.STAINED_GLASS_PANE, 1, color);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(" ");
+            meta.setDisplayName(name);
             item.setItemMeta(meta);
         }
         return item;
@@ -131,7 +145,7 @@ public class HeartShopGUI {
         return item;
     }
 
-    private ItemStack createPlayerStats() {
+    private ItemStack createPlayerStats(int price1Heart) {
         ItemStack item = new ItemStack(Material.BOOK);
         ItemMeta meta = item.getItemMeta();
 
@@ -142,14 +156,14 @@ public class HeartShopGUI {
 
             meta.setDisplayName("§6✦ Your Stats ✦");
             List<String> lore = new ArrayList<>();
-            lore.add("§7─────────────────────────");
-            lore.add("§ePoints Balance: §a" + points);
-            lore.add("§eYour Hearts: §a" + hearts + "§7/§a" + maxHearts);
-            
-            int canBuy = points / 10; // Cheapest item is 10 points
-            lore.add("§eYou can buy up to: §a" + canBuy + " single hearts");
-            
-            lore.add("§7─────────────────────────");
+            lore.add("§7┌─────────────────────────┐");
+            lore.add("  §ePoints Balance: §a" + points);
+            lore.add("  §eYour Hearts: §a" + hearts + "§7/§a" + maxHearts);
+            if (price1Heart > 0) {
+                int canBuy = points / price1Heart;
+                lore.add("  §eMaximum Purchase: §a" + canBuy + " hearts");
+            }
+            lore.add("§7└─────────────────────────┘");
             meta.setLore(lore);
             item.setItemMeta(meta);
         }
@@ -157,21 +171,23 @@ public class HeartShopGUI {
         return item;
     }
 
-    private ItemStack createInfoItem() {
+    private ItemStack createInfoItem(int price1Heart, int price5Hearts, int price10Hearts) {
         ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
         ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
             meta.setDisplayName("§e📚 Value Comparison");
             List<String> lore = new ArrayList<>();
-            lore.add("§7─────────────────────────");
-            lore.add("§e1 Heart: §a10 pts §7(0.1)");
-            lore.add("§e5 Hearts: §a45 pts §7(0.11)");
-            lore.add("§e10 Hearts: §a80 pts §7(0.125)");
-            lore.add("§e20 Hearts: §a150 pts §7(0.133)");
-            lore.add("§7─────────────────────────");
-            lore.add("§7The bigger the bundle,");
-            lore.add("§7the better your value!");
+            lore.add("§7┌─ Price Breakdown ─────┐");
+            lore.add("  §e1 Heart: §a" + price1Heart + " pts");
+            lore.add("    §7→ §a" + formatPerHeart(price1Heart, 1) + " pts/heart");
+            lore.add(" ");
+            lore.add("  §e5 Hearts: §a" + price5Hearts + " pts");
+            lore.add("    §7→ §a" + formatPerHeart(price5Hearts, 5) + " pts/heart");
+            lore.add(" ");
+            lore.add("  §e10 Hearts: §a" + price10Hearts + " pts");
+            lore.add("    §7→ §a" + formatPerHeart(price10Hearts, 10) + " pts/heart");
+            lore.add("§7└───────────────────────┘");
             meta.setLore(lore);
             item.setItemMeta(meta);
         }
@@ -186,16 +202,16 @@ public class HeartShopGUI {
         if (meta != null) {
             meta.setDisplayName("§9❓ How to Use");
             List<String> lore = new ArrayList<>();
-            lore.add("§7─────────────────────────");
-            lore.add("§eClick on any package:");
+            lore.add("§7┌────────────────────────┐");
+            lore.add("  §aHow to Buy Hearts:");
             lore.add(" ");
-            lore.add("§a✓ §7Your points are deducted");
-            lore.add("§a✓ §7Hearts are added");
-            lore.add("§a✓ §7Inventory updates instantly");
+            lore.add("  §7→ §aClick any package");
+            lore.add("  §7→ §aPoints are deducted");
+            lore.add("  §7→ §aHearts are added");
             lore.add(" ");
-            lore.add("§cIf you don't have enough");
-            lore.add("§cpoints, you'll be notified.");
-            lore.add("§7─────────────────────────");
+            lore.add("  §cInsufficient Points?");
+            lore.add("  §aYou'll get a message!");
+            lore.add("§7└────────────────────────┘");
             meta.setLore(lore);
             item.setItemMeta(meta);
         }
@@ -218,6 +234,26 @@ public class HeartShopGUI {
         return item;
     }
 
+    private ItemStack createTipsItem() {
+        ItemStack item = new ItemStack(Material.PAPER);
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta != null) {
+            meta.setDisplayName("§e💡 Pro Tips");
+            List<String> lore = new ArrayList<>();
+            lore.add("§7─────────────────────────");
+            lore.add("§a✓ §7Bundle purchases save money");
+            lore.add("§a✓ §7Don't fall below 1 heart!");
+            lore.add("§a✓ §7Earn more points in PvP");
+            lore.add("§a✓ §7Max hearts is " + plugin.getHeartManager().getMaxHearts());
+            lore.add("§7─────────────────────────");
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+        }
+
+        return item;
+    }
+
     private int getPlayerPoints(UUID uuid) {
         try {
             Object api = plugin.getPlayerPointsAPI();
@@ -230,6 +266,14 @@ public class HeartShopGUI {
             plugin.getLogger().warning("Failed to get player points: " + e.getMessage());
         }
         return 0;
+    }
+
+    private String formatPerHeart(int price, int hearts) {
+        if (hearts <= 0) {
+            return "0";
+        }
+        double perHeart = (double) price / (double) hearts;
+        return String.format("%.2f", perHeart);
     }
 }
 

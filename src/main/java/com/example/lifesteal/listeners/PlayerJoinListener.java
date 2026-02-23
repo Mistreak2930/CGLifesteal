@@ -27,7 +27,7 @@ public class PlayerJoinListener implements Listener {
         plugin.getLogger().info(player.getName() + " joined with " + hearts + " hearts.");
         
         // Welcome message
-        player.sendMessage("§6[Lifesteal] §aWelcome! You have §e" + hearts + "§a hearts.");
-        player.sendMessage("§6[Lifesteal] §aUse §e/heartshop§a to buy hearts!");
+        player.sendMessage("§8[§cLifesteal§8] §aWelcome! You have §e" + hearts + "§a hearts.");
+        player.sendMessage("§8[§cLifesteal§8] §aUse §e/heartshop§a to buy hearts!");
     }
 }

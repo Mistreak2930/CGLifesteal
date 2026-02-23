@@ -52,6 +52,12 @@ public class TeamManager {
             List<String> members = teamsConfig.getStringList(teamName + ".members");
             List<String> invites = teamsConfig.getStringList(teamName + ".invites");
             
+            // Load team stats
+            int kills = teamsConfig.getInt(teamName + ".stats.kills", 0);
+            int deaths = teamsConfig.getInt(teamName + ".stats.deaths", 0);
+            int wins = teamsConfig.getInt(teamName + ".stats.wins", 0);
+            int losses = teamsConfig.getInt(teamName + ".stats.losses", 0);
+            
             List<UUID> memberUUIDs = new ArrayList<>();
             List<UUID> inviteUUIDs = new ArrayList<>();
             
@@ -66,6 +72,10 @@ public class TeamManager {
                 }
                 
                 Team team = new Team(teamName, UUID.fromString(leaderUUID), memberUUIDs, inviteUUIDs);
+                team.setKills(kills);
+                team.setDeaths(deaths);
+                team.setWins(wins);
+                team.setLosses(losses);
                 teamsCache.put(teamName, team);
             } catch (IllegalArgumentException e) {
                 plugin.getLogger().warning("Invalid UUID in teams.yml for team: " + teamName);
@@ -92,6 +102,12 @@ public class TeamManager {
                 inviteStrings.add(uuid.toString());
             }
             teamsConfig.set(teamName + ".invites", inviteStrings);
+            
+            // Save team stats
+            teamsConfig.set(teamName + ".stats.kills", team.getKills());
+            teamsConfig.set(teamName + ".stats.deaths", team.getDeaths());
+            teamsConfig.set(teamName + ".stats.wins", team.getWins());
+            teamsConfig.set(teamName + ".stats.losses", team.getLosses());
         }
         
         try {
@@ -218,12 +234,20 @@ public class TeamManager {
         private UUID leader;
         private List<UUID> members;
         private List<UUID> pendingInvites;
+        private int kills;
+        private int deaths;
+        private int wins;
+        private int losses;
 
         public Team(String name, UUID leader, List<UUID> members, List<UUID> pendingInvites) {
             this.name = name;
             this.leader = leader;
             this.members = members;
             this.pendingInvites = pendingInvites;
+            this.kills = 0;
+            this.deaths = 0;
+            this.wins = 0;
+            this.losses = 0;
         }
 
         public String getName() {
@@ -272,6 +296,55 @@ public class TeamManager {
 
         public void removeInvite(UUID uuid) {
             pendingInvites.remove(uuid);
+        }
+        
+        // Stats methods
+        public int getKills() {
+            return kills;
+        }
+        
+        public void setKills(int kills) {
+            this.kills = kills;
+        }
+        
+        public void addKills(int amount) {
+            this.kills += amount;
+        }
+        
+        public int getDeaths() {
+            return deaths;
+        }
+        
+        public void setDeaths(int deaths) {
+            this.deaths = deaths;
+        }
+        
+        public void addDeaths(int amount) {
+            this.deaths += amount;
+        }
+        
+        public int getWins() {
+            return wins;
+        }
+        
+        public void setWins(int wins) {
+            this.wins = wins;
+        }
+        
+        public void addWins(int amount) {
+            this.wins += amount;
+        }
+        
+        public int getLosses() {
+            return losses;
+        }
+        
+        public void setLosses(int losses) {
+            this.losses = losses;
+        }
+        
+        public void addLosses(int amount) {
+            this.losses += amount;
         }
     }
 }

@@ -18,18 +18,18 @@ public class GiveHeartCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!sender.hasPermission("lifesteal.admin")) {
-            sender.sendMessage("§c[Lifesteal] You don't have permission!");
+            sender.sendMessage("§8[§cLifesteal§8] §cYou don't have permission!");
             return true;
         }
 
         if (args.length != 2) {
-            sender.sendMessage("§c[Lifesteal] Usage: /giveheart <player> <amount>");
+            sender.sendMessage("§8[§cLifesteal§8] §cUsage: /giveheart <player> <amount>");
             return true;
         }
 
         Player target = Bukkit.getPlayer(args[0]);
         if (target == null) {
-            sender.sendMessage("§c[Lifesteal] Player not found!");
+            sender.sendMessage("§8[§cLifesteal§8] §cPlayer not found!");
             return true;
         }
 
@@ -37,12 +37,12 @@ public class GiveHeartCommand implements CommandExecutor {
         try {
             amount = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
-            sender.sendMessage("§c[Lifesteal] Invalid amount!");
+            sender.sendMessage("§8[§cLifesteal§8] §cInvalid amount!");
             return true;
         }
 
         if (amount <= 0) {
-            sender.sendMessage("§c[Lifesteal] Amount must be positive!");
+            sender.sendMessage("§8[§cLifesteal§8] §cAmount must be positive!");
             return true;
         }
 
@@ -50,9 +50,9 @@ public class GiveHeartCommand implements CommandExecutor {
         plugin.getHeartManager().addHearts(target, amount);
         int newHearts = plugin.getHeartManager().getHearts(target);
 
-        sender.sendMessage("§6[Lifesteal] §aGave §e" + amount + "§a hearts to §e" + target.getName() + 
+        sender.sendMessage("§8[§cLifesteal§8] §aGave §e" + amount + "§a hearts to §e" + target.getName() + 
                           "§a (§e" + oldHearts + "§a -> §e" + newHearts + "§a)");
-        target.sendMessage("§6[Lifesteal] §e" + sender.getName() + "§a gave you §e" + amount + "§a hearts!");
+        target.sendMessage("§8[§cLifesteal§8] §e" + sender.getName() + "§a gave you §e" + amount + "§a hearts!");
 
         return true;
     }

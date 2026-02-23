@@ -1,5 +1,6 @@
 package com.example.lifesteal.system;
 
+import com.example.lifesteal.LifestealPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,7 +21,7 @@ public class HeartManager {
     private Map<UUID, Integer> heartsCache;
     private static final int MAX_HEARTS = 20;
     private static final int MIN_HEARTS = 0;
-    private static final int DEFAULT_HEARTS = 20;
+    private static final int DEFAULT_HEARTS = 10;
 
     public HeartManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -46,13 +47,30 @@ public class HeartManager {
 
     public void loadHearts() {
         heartsCache.clear();
+        Map<String, Integer> nameHearts = new HashMap<>();
+        
         for (String key : heartsConfig.getKeys(false)) {
+            int hearts = heartsConfig.getInt(key, DEFAULT_HEARTS);
+            hearts = Math.max(MIN_HEARTS, Math.min(MAX_HEARTS, hearts));
+            
             try {
+                // Try to parse as UUID (for backwards compatibility)
                 UUID uuid = UUID.fromString(key);
-                int hearts = heartsConfig.getInt(key, DEFAULT_HEARTS);
-                heartsCache.put(uuid, Math.max(MIN_HEARTS, Math.min(MAX_HEARTS, hearts)));
+                heartsCache.put(uuid, hearts);
             } catch (IllegalArgumentException e) {
-                plugin.getLogger().warning("Invalid UUID in hearts.yml: " + key);
+                // Not a UUID, treat as player name
+                nameHearts.put(key, hearts);
+            }
+        }
+        
+        // Convert name entries to UUID entries
+        for (Map.Entry<String, Integer> entry : nameHearts.entrySet()) {
+            try {
+                UUID uuid = Bukkit.getOfflinePlayer(entry.getKey()).getUniqueId();
+                heartsCache.put(uuid, entry.getValue());
+                plugin.getLogger().info("Migrated " + entry.getKey() + " to UUID in hearts cache");
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to migrate player " + entry.getKey() + ": " + e.getMessage());
             }
         }
     }
@@ -60,7 +78,19 @@ public class HeartManager {
     public void saveHearts() {
         heartsConfig = new YamlConfiguration();
         for (Map.Entry<UUID, Integer> entry : heartsCache.entrySet()) {
-            heartsConfig.set(entry.getKey().toString(), entry.getValue());
+            try {
+                String playerName = Bukkit.getOfflinePlayer(entry.getKey()).getName();
+                if (playerName != null && !playerName.isEmpty()) {
+                    // Save by player name for readability
+                    heartsConfig.set(playerName, entry.getValue());
+                } else {
+                    // Fallback to UUID if name not available
+                    heartsConfig.set(entry.getKey().toString(), entry.getValue());
+                }
+            } catch (Exception e) {
+                // Fallback to UUID
+                heartsConfig.set(entry.getKey().toString(), entry.getValue());
+            }
         }
         try {
             heartsConfig.save(heartsFile);
@@ -86,7 +116,7 @@ public class HeartManager {
         Player player = Bukkit.getPlayer(uuid);
         if (player != null) {
             updatePlayerHealth(player, clamped);
-            player.sendMessage("§6[Lifesteal] §aYour hearts: §e" + clamped);
+            player.sendMessage("§8[§cLifesteal§8] §aYour hearts: §e" + clamped);
         }
         
         heartsConfig.set(uuid.toString(), clamped);
@@ -105,6 +135,33 @@ public class HeartManager {
         int newAmount = current - amount;
         setHearts(uuid, newAmount);
         plugin.getLogger().info("Removed " + amount + " hearts from " + uuid + ". New: " + newAmount);
+        
+        // Check if player ran out of hearts and ban them
+        if (newAmount <= 0) {
+            Player player = Bukkit.getPlayer(uuid);
+            LifestealPlugin lifestealPlugin = LifestealPlugin.getInstance();
+            if (player != null) {
+                String banReason = lifestealPlugin.getMessageManager().getMessage("ban.ran-out-of-hearts");
+                player.kickPlayer("§c" + banReason);
+                Bukkit.getOnlinePlayers().forEach(p -> {
+                    if (p.hasPermission("lifesteal.admin")) {
+                        p.sendMessage(lifestealPlugin.getMessageManager().getMessage("ban.notification", 
+                            java.util.Map.of("player", player.getName())));
+                    }
+                });
+            }
+            // Ban the player
+            try {
+                Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(
+                    Bukkit.getOfflinePlayer(uuid).getName(),
+                    lifestealPlugin.getMessageManager().getMessage("ban.ran-out-of-hearts"),
+                    null,
+                    null
+                );
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to ban player: " + e.getMessage());
+            }
+        }
     }
 
     public void addHearts(Player player, int amount) {
@@ -180,5 +237,16 @@ public class HeartManager {
 
     public int getDefaultHearts() {
         return DEFAULT_HEARTS;
+    }
+
+    public void resetAllHearts(int heartsAmount) {
+        heartsCache.clear();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            heartsCache.put(player.getUniqueId(), heartsAmount);
+            updatePlayerHealth(player, heartsAmount);
+            player.sendMessage("§8[§cLifesteal§8] §aAll hearts have been reset to §e" + heartsAmount);
+        }
+        saveHearts();
+        plugin.getLogger().info("Reset all players' hearts to " + heartsAmount);
     }
 }

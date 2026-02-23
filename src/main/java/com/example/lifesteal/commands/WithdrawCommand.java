@@ -30,7 +30,7 @@ public class WithdrawCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (args.length != 1) {
-            player.sendMessage("§c[Lifesteal] Usage: /withdraw <amount>");
+            player.sendMessage("§8[§cLifesteal§8] §cUsage: /withdraw <amount>");
             return true;
         }
 
@@ -94,10 +94,10 @@ public class WithdrawCommand implements CommandExecutor {
             item.setItemMeta(meta);
         }
         
-        item.setAmount(Math.min(amount, 64)); // Max stack size
-        
+        item.setAmount(1);
+
         // Store amount in damage value (for 1.12.2 compatibility)
-        item.setDurability((short) amount);
+        item.setDurability((short) Math.min(amount, Short.MAX_VALUE));
         
         return item;
     }
