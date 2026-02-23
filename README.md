@@ -10,7 +10,6 @@ A comprehensive Lifesteal plugin for Minecraft 1.12.2 servers featuring hearts m
 - Default hearts: 10 (set on first join)
 - Hearts are tracked per player in `hearts.yml`
 - Ban players automatically when they reach 0 hearts
-- Players can be revived with `/revive` command
 
 ### 2. **Player Hearts Commands**
 - `/hearts [player]` - View your or another player's hearts
@@ -160,7 +159,7 @@ format: '{DISPLAYNAME} &7[%lifesteal_team_name_hover%&7] &f{MESSAGE}'
 - Custom death messages with multiple variations
 - Team notifications when members die or kill players
 - **War deaths** tracked separately for war victories
-- Ban players at 0 hearts with optional unban on revive
+- Ban players at 0 hearts
 
 ### 14. **Admin Features**
 - `/lifestealreload` - Reload plugin configuration without restarting
@@ -414,7 +413,6 @@ Free to use and modify for your server.
 
 ✅ Lottery system with hourly draws
 ✅ Daily reward system with money and points
-✅ Revive system with automatic unbanning
 ✅ Heart item system for trading
 ✅ Complete team management GUI
 ✅ Fully compatible with other plugins (non-invasive)
@@ -472,7 +470,6 @@ For issues or feature requests, please check the configuration and permissions f
 ### New Features
 - ✨ Lottery system with configurable tickets and hourly draws
 - ✨ Daily reward system with money and PlayerPoints
-- ✨ Revive system with automatic unbanning
 - ✨ Heart items that can be right-clicked to gain hearts
 - ✨ Team management GUI interface
 - ✨ Reload command for hot configuration reloading

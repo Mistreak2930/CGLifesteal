@@ -10,7 +10,7 @@ commands:
   # Hearts Commands
   hearts:
     description: View and manage player hearts
-    usage: /hearts [player|give|take|set|get|revive] [args...]
+    usage: /hearts [player|give|take|set|get] [args...]
     permission: lifesteal.hearts
     aliases: [h]
   
