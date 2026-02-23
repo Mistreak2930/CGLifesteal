@@ -39,11 +39,18 @@ public class LifestealPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
         
+        getLogger().info("════════════════════════════════════════════════════════");
+        getLogger().info("Lifesteal Plugin v" + getDescription().getVersion() + " - Initializing...");
+        getLogger().info("════════════════════════════════════════════════════════");
+        
         // Load configuration
+        long startTime = System.currentTimeMillis();
         saveDefaultConfig();
+        getLogger().info("✓ Configuration loaded");
         
         // Initialize MessageUtil first
         MessageUtil.setPlugin(this);
+        getLogger().info("✓ Message system initialized");
         
         // Initialize managers
         this.heartManager = new HeartManager(this);
@@ -52,91 +59,111 @@ public class LifestealPlugin extends JavaPlugin {
         this.orbitsManager = new OrbitsManager(this);
         this.bundleManager = new BundleManager(this);
         this.teamWarManager = new TeamWarManager(this);
+        getLogger().info("✓ Core managers loaded (Hearts, Teams, Orbits, Bundles, Wars)");
         
         // Setup Vault economy integration
         if (setupEconomy()) {
-            getLogger().info("Vault Economy integration enabled!");
+            getLogger().info("✓ Vault Economy integration enabled");
         } else {
-            getLogger().warning("Vault Economy not found! Money features will be disabled.");
+            getLogger().warning("✗ Vault Economy not found - money features disabled");
         }
         
         // Setup PlayerPoints integration
         if (setupPlayerPoints()) {
-            getLogger().info("PlayerPoints integration enabled!");
+            getLogger().info("✓ PlayerPoints integration enabled");
             
             // Initialize economy-dependent managers
             this.lotteryManager = new LotteryManager(this);
             this.dailyRewardManager = new DailyRewardManager(this);
-            getLogger().info("Lottery and Daily Reward systems enabled!");
+            getLogger().info("✓ Lottery & Daily Reward systems initialized");
         } else {
-            getLogger().warning("PlayerPoints not found! Lottery and Daily Reward features will be disabled.");
+            getLogger().warning("✗ PlayerPoints not found - Lottery/Rewards disabled (required plugin)");
             this.lotteryManager = null;
             this.dailyRewardManager = null;
         }
         
         // Register commands
         registerCommands();
+        getLogger().info("✓ All commands registered (13 commands)");
         
         // Register listeners
         registerListeners();
+        getLogger().info("✓ Event listeners registered");
 
+        // Setup PlaceholderAPI integration
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new LifestealPlaceholderExpansion(this).register();
-            getLogger().info("PlaceholderAPI integration enabled!");
+            getLogger().info("✓ PlaceholderAPI integration enabled");
         } else {
-            getLogger().info("PlaceholderAPI not found. Placeholders disabled.");
+            getLogger().info("ℹ PlaceholderAPI not found - placeholders disabled (optional)");
         }
         
-        getLogger().info("╔═════════════════════════╗");
-        getLogger().info("║ Lifesteal Plugin Enabled ║");
-        getLogger().info("║ Version: " + getDescription().getVersion() + "         ║");
-        getLogger().info("║ Features:                ║");
-        getLogger().info("║ • Hearts System          ║");
-        getLogger().info("║ • Teams Management       ║");
-        getLogger().info("║ • Team GUI               ║");
-        if (hasPlayerPoints()) {
-            getLogger().info("║ • Lottery System         ║");
-            getLogger().info("║ • Daily Rewards          ║");
-        }
-        getLogger().info("╚═════════════════════════╝");
+        long loadTime = System.currentTimeMillis() - startTime;
+        getLogger().info("════════════════════════════════════════════════════════");
+        getLogger().info("✓ Lifesteal Plugin ENABLED successfully!");
+        getLogger().info("  • Version: " + getDescription().getVersion());
+        getLogger().info("  • Load time: " + loadTime + "ms");
+        getLogger().info("  • Status: Ready for play");
+        getLogger().info("════════════════════════════════════════════════════════");
     }
 
     @Override
     public void onDisable() {
+        getLogger().info("════════════════════════════════════════════════════════");
+        getLogger().info("Lifesteal Plugin - Shutting down...");
+        getLogger().info("════════════════════════════════════════════════════════");
+        
+        int savedCount = 0;
+        
         if (heartManager != null) {
             heartManager.saveHearts();
+            savedCount++;
         }
         if (teamManager != null) {
             teamManager.saveTeams();
+            savedCount++;
         }
         if (orbitsManager != null) {
             orbitsManager.saveOrbits();
+            savedCount++;
         }
         if (dailyRewardManager != null) {
             dailyRewardManager.saveDailyRewardData();
+            savedCount++;
         }
         if (bundleManager != null) {
             bundleManager.saveBundleData();
+            savedCount++;
         }
         if (teamWarManager != null) {
             teamWarManager.saveWarData();
+            savedCount++;
         }
         if (lotteryManager != null) {
             lotteryManager.disable();
         }
-        getLogger().info("Lifesteal plugin disabled!");
+        
+        getLogger().info("✓ Data saved (" + savedCount + " managers flushed)");
+        getLogger().info("════════════════════════════════════════════════════════");
+        getLogger().info("✓ Lifesteal Plugin DISABLED");
+        getLogger().info("════════════════════════════════════════════════════════");
     }
 
     /**
      * Setup Vault Economy integration
+     * Attempts to hook into the Vault economy provider
+     * 
+     * @return true if Vault economy is available and set up, false otherwise
      */
     private boolean setupEconomy() {
         if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
+            getLogger().fine("Vault plugin not found - economy features will be unavailable");
             return false;
         }
         
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp == null) {
+            getLogger().fine("No economy service provider found - coins/money features disabled");
             return false;
         }
         
@@ -146,12 +173,16 @@ public class LifestealPlugin extends JavaPlugin {
 
     /**
      * Setup PlayerPoints API integration
+     * Attempts to hook into the PlayerPoints plugin via reflection
+     * Required for: Lottery, Daily Rewards, Bundle System
+     * 
+     * @return true if PlayerPoints API is successfully initialized, false otherwise
      */
     private boolean setupPlayerPoints() {
         try {
             // Check if PlayerPoints plugin is loaded
             if (Bukkit.getPluginManager().getPlugin("PlayerPoints") == null) {
-                getLogger().warning("PlayerPoints plugin not found!");
+                getLogger().fine("PlayerPoints plugin not installed - lottery/rewards disabled");
                 return false;
             }
             
@@ -160,7 +191,7 @@ public class LifestealPlugin extends JavaPlugin {
             Object ppInstance = playerPointsClass.getMethod("getInstance").invoke(null);
             
             if (ppInstance == null) {
-                getLogger().warning("Could not get PlayerPoints instance!");
+                getLogger().warning("ERROR: PlayerPoints instance is null - failed to initialize");
                 return false;
             }
             
@@ -168,18 +199,20 @@ public class LifestealPlugin extends JavaPlugin {
             this.playerPointsAPI = playerPointsClass.getMethod("getAPI").invoke(ppInstance);
             
             if (this.playerPointsAPI == null) {
-                getLogger().warning("Could not get PlayerPoints API!");
+                getLogger().warning("ERROR: PlayerPoints API is null - failed to hook");
                 return false;
             }
             
-            getLogger().info("Successfully hooked into PlayerPoints!");
+            getLogger().fine("PlayerPoints API successfully hooked via reflection");
             return true;
         } catch (ClassNotFoundException e) {
-            getLogger().warning("PlayerPoints classes not found: " + e.getMessage());
+            getLogger().fine("PlayerPoints class not found in classpath");
+            return false;
+        } catch (NoSuchMethodException e) {
+            getLogger().warning("ERROR: PlayerPoints API method not found - wrong version?");
             return false;
         } catch (Exception e) {
-            getLogger().warning("Error setting up PlayerPoints: " + e.getMessage());
-            e.printStackTrace();
+            getLogger().warning("ERROR: Failed to hook PlayerPoints - " + e.getClass().getSimpleName() + ": " + e.getMessage());
             return false;
         }
     }

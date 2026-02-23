@@ -1,136 +1,132 @@
-# Lifesteal Configuration
+# ═══════════════════════════════════════════════════════════════
+# Lifesteal Plugin Configuration
+# All values here control the behavior of the Lifesteal system
+# For support: Check README.md or plugin documentation
+# ═══════════════════════════════════════════════════════════════
 
-# General Settings
+# --- GENERAL SETTINGS ---
 settings:
-  # Starting hearts for new players
+  # Starting hearts for new players on first join
   default-hearts: 10
   
-  # Maximum hearts a player can have
+  # Maximum hearts a player can reach
   max-hearts: 20
   
-  # Minimum hearts a player can have (dead if reached)
+  # Hearts required to stay alive (0 = death/ban)
   min-hearts: 0
   
-  # If true, plugin adjusts player max health to match hearts
+  # Synchronize player max health with heart count
   adjust-max-health: true
   
-  # Maximum team size
+  # Maximum players allowed per team
   max-team-size: 10
   
-  # Ban players when they reach 0 hearts
+  # Automatically ban players when they reach 0 hearts
   ban-on-zero-hearts: true
-  
-  # Debug mode - logs extra information
-  debug: false
 
-# Heart System Settings
-hearts:
-  # Hearts lost on death (0 to disable)
+# --- DEATH & HEARTS SYSTEM ---
+# These settings control heart loss/gain mechanics
+death:
+  # Hearts lost by a player when they die (0 = disabled)
   hearts-lost-on-death: 1
   
-  # Hearts gained when killing another player
+  # Hearts gained by a killer when they kill someone
   hearts-gained-on-kill: 1
   
-  # Whether a killer is required to gain hearts
+  # Require there to be an actual killer to gain hearts
+  # If false, player gains hearts on any death
   killer-required: false
-  
-  # Custom heart item material (RED_DYE)
+
+# --- HEART ITEM SETTINGS ---
+# Configure the physical heart items from /withdraw
+hearts:
   item:
+    # Material used for heart items (valid Minecraft material)
     material: RED_DYE
+    
+    # Display name when held
     name: "§cHeart"
+    
+    # Lore text shown on item
     lore:
       - "§7Use this to gain"
       - "§7+1 Max Heart"
     
-    # Amount of max health increased per item used
+    # Max health increase per heart item used
     health-increase-per-item: 2
 
-# Lottery Settings
+# --- LOTTERY SYSTEM ---
+# Hourly random drawing with prizes
 lottery:
-  # Price of one lottery ticket (in money/PlayerPoints)
+  # Price per lottery ticket
   ticket-price: 100
   
-  # Whether lottery is enabled
+  # Enable/disable lottery system entirely
   enabled: true
 
-# Daily Reward Settings
+# --- DAILY REWARDS ---
+# Automatic daily claim system
 daily-reward:
-  # Money reward per day
+  # Money given per claim (requires Vault)
   money: 100
   
-  # Player points reward per day
+  # Points given per claim (requires PlayerPoints)
   points: 100
   
-  # Whether daily rewards are enabled
+  # Enable/disable daily reward system
   enabled: true
 
-# Team Settings
+# --- TEAM SYSTEM ---
 teams:
-  # Minimum team name length
+  # Minimum characters for team name
   min-team-name-length: 3
   
-  # Maximum team name length
+  # Maximum characters for team name
   max-team-name-length: 16
   
-  # Maximum team size
+  # Maximum players per team
   max-team-size: 10
   
-  # Team chat settings
+  # Team chat configuration
   chat:
-    # Prefix for team chat messages
+    # Prefix shown in team chat messages
     prefix: "§6[Team]"
     
-    # Whether team chat is enabled
+    # Enable/disable team chat entirely
     enabled: true
     
-    # Messages starting with this character go to team chat
+    # Character that activates team chat (e.g., !message)
     activation-character: "!"
 
-# Team Wars Settings
+# --- TEAM WARS ---
+# Team vs Team competitive battles
 team-wars:
-  # Whether team wars are enabled
+  # Enable/disable team wars
   enabled: true
   
-  # Money reward per enemy team member (given to each winning team member)
+  # Money reward per defeated enemy member
+  # Example: $5000 per enemy if team has 5 members
   reward-per-member: 1000.0
   
-  # Require both team leaders to accept before war begins
+  # Both leaders must accept before war starts
   require-both-leaders: true
   
-  # Cooldown in minutes after a war ends before team can war again
+  # Cooldown (in minutes) after war ends before teams can war again
   cooldown-minutes: 60
 
-# GUI Settings
-gui:
-  # Team GUI settings
-  team:
-    # Whether team GUI is enabled
-    enabled: true
-    
-    # Inventory size (27 or 36 for 3x9 or 4x9 chest)
-    inventory-size: 27# Death Settings
-death:
-  # Hearts lost on death (0 to disable)
-  hearts-lost-on-death: 1
-  
-  # Hearts gained on kill
-  hearts-gained-on-kill: 1
-  
-  # Whether a killer is required to gain hearts
-  killer-required: false
-
-# Bundle Settings
+# --- BUNDLE SYSTEM ---
+# Daily reward bundles with randomized prizes
 bundles:
-  # Maximum bundles per day
+  # Number of bundles players get per day
   max-per-day: 3
   
-  # Time in hours until bundles reset (24 hours)
+  # Hours until bundle count resets
   reset-time-hours: 24
   
-  # Time in hours until reward refreshes (12 hours)
+  # Hours until next random reward is generated
   reward-refresh-hours: 12
   
-  # Possible rewards in bundles
+  # Possible rewards (add/remove/modify as needed)
   possible-rewards:
     money:
       type: "MONEY"
@@ -165,10 +161,20 @@ bundles:
       min-amount: 3
       max-amount: 12
 
-# Debug options
+# --- GUI SETTINGS ---
+gui:
+  team:
+    # Enable/disable team GUI
+    enabled: true
+    
+    # Inventory rows (27 for 3x9, 36 for 4x9, 45 for 5x9)
+    inventory-size: 27
+
+# --- DEBUG OPTIONS ---
+# Enable for troubleshooting and detailed logging
 debug:
-  # When true, exceptions will be logged to plugins/Lifesteal/debug.log
+  # Log full stack traces for errors
   log-stacktraces: false
   
-  # Enable debug logging
+  # Enable verbose debug logging
   enable-logging: false

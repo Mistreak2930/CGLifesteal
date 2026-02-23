@@ -2,6 +2,25 @@
 
 A comprehensive Lifesteal plugin for Minecraft 1.12.2 servers featuring hearts management, team systems with wars, lottery, daily rewards, bundles system, and dynamic GUI interfaces.
 
+## 📖 Quick Start
+
+### Installation
+1. Download the compiled JAR from releases
+2. Place JAR in your `plugins/` folder
+3. Install required plugins:
+   - **PlayerPoints** (required for lottery & daily rewards)
+   - **Vault** (required for economy integration)
+4. Restart your server
+5. Configure `plugins/Lifesteal/config.yml` as needed
+6. Restart again or use `/lifestealreload`
+
+### Basic Commands
+- `/hearts` - Check your hearts
+- `/menu` - Open main menu (players)
+- `/team create [name]` - Create a team
+- `/lottery` - Buy lottery tickets
+- `/dailyreward` - Claim daily rewards
+
 ## 🎮 Features Overview
 
 ### 1. **Hearts System**
@@ -10,6 +29,7 @@ A comprehensive Lifesteal plugin for Minecraft 1.12.2 servers featuring hearts m
 - Default hearts: 10 (set on first join)
 - Hearts are tracked per player in `hearts.yml`
 - Ban players automatically when they reach 0 hearts
+- **Configurable** death mechanics in `config.yml`
 
 ### 2. **Player Hearts Commands**
 - `/hearts [player]` - View your or another player's hearts
@@ -191,30 +211,68 @@ lifesteal.admin - Admin permissions (default: op)
 
 ## ⚙️ Dependencies
 
+**Required:**
 - **Spigot/Bukkit 1.12.2** - Core server software
-- **PlayerPoints** - For PlayerPoints currency system
-- **Vault** - For economy system (supports multiple economy plugins)
-- **PlaceholderAPI** (Optional) - For chat placeholder integration
+- **PlayerPoints** - For points currency system (required for lottery/daily rewards)
+- **Vault** - For economy system (integrates with any economy plugin)
 
-## 📦 Installation
+**Optional:**
+- **PlaceholderAPI** - For advanced chat placeholder integration
 
-✅ **Main Menu System** - Centralized GUI hub
+## 📦 Installation & Setup
+
+### Step-by-Step Installation
+
+1. **Download & Install**
+   ```
+   1. Download latest JAR from releases
+   2. Place file in plugins/ folder
+   3. Run /stop or restart server
+   ```
+
+2. **Install Dependencies**
+   - Download and install:
+     - PlayerPoints (required)
+     - Vault (required)
+     - PlaceholderAPI (optional but recommended)
+   - Place these JARs in plugins/ folder and restart
+
+3. **Configure** (Optional)
+   - Edit `plugins/Lifesteal/config.yml` with your preferences
+   - All settings have helpful comments explaining each option
+   - Default values work for most servers
+
+4. **Reload Plugin**
+   - Use `/lifestealreload` to apply config changes without restarting
+   - No server restart needed after configuration edits
+
+### Verify Installation
+
+Check the console on startup. You should see:
+```
+✓ Lifesteal Plugin ENABLED successfully!
+✓ Vault Economy integration enabled
+✓ PlayerPoints integration enabled
+```
+
+If you see warnings, check the Troubleshooting section below.
+
+## ✨ Verified Features
+
+✅ **Hearts System** - Complete player hearts management
+✅ **Main Menu System** - Centralized GUI hub for all features
 ✅ **Daily Bundles** - 3 bundles per day with random rewards
+✅ **Team System** - Create teams, manage members, track stats
 ✅ **Team Wars** - Elimination-based team combat
-✅ **Team Statistics** - Track kills, deaths, wins, losses
-✅ **Enhanced Placeholders** - Hover stats in chat
 ✅ **Lottery System** - Hourly draws with prize pools
-✅ **Daily Rewards** - Money and points every 24 hours
-✅ **Orbits System** - Secondary currency
-✅ **Heart Trading** - Physical heart items
-✅ **Complete Team Management** - Teams with full GUI
-✅ **Team Chat** - Private team communication
-✅ **Vault Economy Integration** - Works with any economy plugin
+✅ **Daily Rewards** - Money and PlayerPoints claims
+✅ **Orbits System** - Secondary currency system
+✅ **Physical Heart Trading** - Withdraw/deposit hearts as items
+✅ **Team Chat** - Private team-only communication
 ✅ **PlaceholderAPI Support** - Advanced chat integration
-✅ **Custom Death Messages** - Multiple variations
-✅ **Persistent Data Storage** - All progress saved
-✅ **Admin Tools** - Full management system
-✅ **Optimized Performance** - Lightweight and efficient
+✅ **Persistent Data** - All progress saved across restarts
+✅ **Admin Tools** - Full management commands
+✅ **Performance Optimized** - Lightweight & efficient
 
 ## 🎯 Team Wars Guide
 
@@ -256,47 +314,107 @@ lifesteal.admin - Admin permissions (default: op)
 - All possible rewards are visible
 - Track total bundles claimed in stats
 
-## 🔧 Troubleshooting
+## 🔧 Troubleshooting & Support
 
-**"PlayerPoints plugin is not installed"**
-- Ensure PlayerPoints plugin is installed and enabled
-- Check that the plugin is in the plugins folder and server is restarted
+### Plugin Startup Issues
+
+**Warnings in console about missing dependencies**
+- Install required plugins: PlayerPoints, Vault
+- Ensure plugins are in `plugins/` folder
+- Restart server completely (not just `/stop`, but full restart)
+- Check plugin versions are compatible with 1.12.2
+
+**"PlayerPoints integration failed"**
+- Verify PlayerPoints is installed and enabled (`/plugins`)
+- Check PlayerPoints version (should be compatible with 1.12.2)
+- Look for red error messages in startup logs
+- If still failing, contact PlayerPoints support
+
+### Runtime Issues
 
 **Hearts not saving**
-- Check folder permissions
-- Ensure `plugins/Lifesteal/` folder exists
-- Check console for errors
+- Check file permissions on `plugins/Lifesteal/` folder
+- Ensure folder exists and is readable/writable
+- Verify disk space is available
+- Check console for permission errors
 
 **Team wars not starting**
-- Verify both leaders have accepted (if required)
-- Check that teams aren't on cooldown
-- Ensure no team is already in another war
+- Both leaders must be online
+- Verify teams aren't on cooldown (60 min default)
+- Check neither team is in another war
+- Use `/teamwar info` to check war status
 
-**Placeholders not working**
-- Install PlaceholderAPI
-- Run `/papi reload`
-- Check placeholder format: `%lifesteal_team_name_hover%`
+**Placeholders not showing in chat**
+- Install PlaceholderAPI plugin
+- Run `/papi reload` after install
+- Verify format: `%lifesteal_team_name_hover%`
+- Check your chat plugin supports PlaceholderAPI
 
-**Bundles not resetting**
-- Check system time is correct
-- Verify bundle reset time in config
-- Check `bundles.yml` for last reset timestamp
+**Daily Bundles not resetting**
+- Check server system time is correct
+- Verify `reset-time-hours` in config (default: 24)
+- Check `bundles.yml` file for reset timestamps
+- Use `/lifestealreload` after changing config
+
+### Common Questions
+
+**Q: Can I change the ban time for 0 hearts players?**
+A: Currently players are permanently banned. You can unban them manually with `/unban` or use another plugin to manage auto-unbans.
+
+**Q: How do I customize bundle rewards?**
+A: Edit `config.yml` under `bundles.possible-rewards`. Add or remove reward types as needed.
+
+**Q: Can I disable the menu or any feature?**
+A: Yes, most features can be disabled in `config.yml` by setting `enabled: false`.
+
+**Q: How do I migrate from another lifesteal plugin?**
+A: Data is stored in YAML format in the plugin folder. You may need to manually migrate player heart counts.
 
 ## 🔨 Building from Source
 
+### Prerequisites
+- Java 8+ JDK
+- Maven 3.6+
+
+### Build Steps
+
 ```bash
+# Clone or extract the source
+cd Lifesteal
+
+# Build the plugin
 mvn clean package
+
+# JAR will be in target/ folder
 ```
 
-The compiled JAR will be in the `target/` directory.
+## ⚙️ Configuration Guide
+
+### config.yml - Key Settings
+
+```yaml
+# Number of hearts players start with
+default-hearts: 10
+
+# Maximum hearts a player can reach
+max-hearts: 20
+
+# Hearts lost when player dies (0 = disabled)
+hearts-lost-on-death: 1
+
+# Hearts gained when killing (0 = disabled)  
+hearts-gained-on-kill: 1
+```
+
+For detailed configuration, see comments in `plugins/Lifesteal/config.yml` after first run.
 
 ## 💡 Tips & Tricks
 
-1. **Configure War Rewards** - Adjust `team-wars.reward-per-member` for balanced economy
-2. **Customize Bundles** - Edit possible rewards in `config.yml`
-3. **Team Chat Integration** - Use EssentialsXChat with hover placeholders
-4. **Balance Hearts** - Adjust `hearts-lost-on-death` and `hearts-gained-on-kill`
-5. **Economy Balance** - Set appropriate lottery, daily reward, and bundle values
+1. **Balanced Economy** - Adjust lottery prices and daily rewards to match your server economy
+2. **Team Size** - Set `max-team-size` based on server player count
+3. **War Cooldown** - Increase `cooldown-minutes` if wars happen too frequently
+4. **Bundle Rewards** - Customize rewards to match your server themes
+5. **Custom Messages** - Edit `messages.yml` to match your server's style
 
 ## 📊 Version Info
 
@@ -346,151 +464,16 @@ The compiled JAR will be in the `target/` directory.
 - 🐛 Team stats persistence across restarts
 - 🐛 War tracking and victory detection
 
-## 📄 License
-
-Free to use and modify for your server.
-
 ---
 
-**Enjoy your enhanced Lifesteal experience with Team Wars and Daily Bundles!**
+## 📄 License & Support
 
-### Daily Rewards
-```
-/dailyreward             # Claim daily money and points
-                         # 24-hour cooldown between claims
-```
+This plugin is free to use and modify for your server.
 
-### Team Operations
-```
-/team create MyTeam      # Create team "MyTeam"
-/team gui               # Open team management GUI
-/team invite Steve      # Invite Steve to your team
-/team list              # See all teams on server
-/team info              # View your team details
-/team leave             # Leave your team
-!Hello team!            # Send message only to team members
-```
+For issues or feature requests, review the console logs and troubleshooting section above, then contact the developer.
 
-### Team Wars
-```
-/teamwar declare RedTeam   # Declare war on RedTeam
-/teamwar accept           # Accept war declaration (leader only)
-/teamwar info             # View current war status
-/teamwar list             # List all active wars
-```
+## 👥 Credits
 
-### Admin Commands
-```
-/giveheart Player 5      # Give Player 5 hearts
-/takeheart Player 3      # Take 3 hearts from Player
-/orbits give Player 100  # Give 100 orbits
-/lifestealreload         # Reload configuration
-/menu                    # Open main menu (also for players)
-```
+**Lifesteal Plugin v1.3.0** - Developed for Minecraft 1.12.2 servers
 
-## ✨ Features
-
-### Team Operations
-```
-/team create MyTeam      # Create team "MyTeam"
-/team gui               # Open team management GUI (NEW!)
-/team invite Steve      # Invite Steve to your team
-/team list              # See all teams on server
-/team info              # View your team details
-/team leave             # Leave your team
-!Hello team!            # Send message only to team members
-```
-
-### Admin Commands
-```
-/giveheart Player 5      # Give Player 5 hearts
-/takeheart Player 3      # Take 3 hearts from Player
-/lifestealreload         # Reload configuration (NEW!)
-/hearts Player           # Check Player's hearts
-```
-
-## Features
-
-✅ Lottery system with hourly draws
-✅ Daily reward system with money and points
-✅ Heart item system for trading
-✅ Complete team management GUI
-✅ Fully compatible with other plugins (non-invasive)
-✅ Persistent data storage (hearts, teams, lottery, rewards)
-✅ GUI-based shop system
-✅ Team communication system
-✅ Admin tools for management
-✅ Integration with Vault Economy
-✅ Custom death messages with variations
-✅ Optimized for server performance
-
-## Troubleshooting
-
-**"PlayerPoints plugin is not installed"**
-- Ensure PlayerPoints plugin is installed and enabled
-- Check that the plugin is in the plugins folder and server is restarted
-
-**Hearts not saving**
-- Check folder permissions
-- Ensure `plugins/Lifesteal/` folder exists
-- Check console for errors
-
-**Shop not opening**
-- Make sure you have the correct permissions
-- Verify PlayerPoints is working
-- Check that inventory slot 27 is available during click
-
-**Team chat not working**
-- Make sure you're in a team (`/team info`)
-- Try using `/teamchat` instead of `!` prefix
-- Check if you have chat permissions
-
-## Building from Source
-
-```bash
-mvn clean package
-```
-
-The compiled JAR will be in the `target/` directory.
-
-## Support
-
-For issues or feature requests, please check the configuration and permissions first, then review the console logs for any error messages.
-
-## Version Info
-
-- **Plugin Version**: 1.2.0
-- **Minecraft Version**: 1.12.2
-- **API**: Spigot/Bukkit
-- **Java**: 8+
-- **Dependencies**: Vault, PlayerPoints
-
-## Changelog (v1.2.0)
-
-### New Features
-- ✨ Lottery system with configurable tickets and hourly draws
-- ✨ Daily reward system with money and PlayerPoints
-- ✨ Heart items that can be right-clicked to gain hearts
-- ✨ Team management GUI interface
-- ✨ Reload command for hot configuration reloading
-
-### Improvements
-- 🔧 Enhanced configuration with more detailed settings
-- 🔧 Vault Economy integration (supports any economy plugin)
-- 🔧 Random death message variations
-- 🔧 Better error handling and logging
-- 🔧 Improved message system with color codes
-- 🔧 UUID migration support for hearts storage
-
-### Fixes
-- 🐛 Default hearts now correctly set to 10
-- 🐛 Fixed message formatting and colors
-- 🐛 Better heart cap enforcement
-
-## License
-
-Free to use and modify for your server.
-
----
-
-Enjoy your Lifesteal experience!
+**Enjoy your enhanced Lifesteal experience!**
