@@ -76,6 +76,18 @@ daily-reward:
   # Enable/disable daily reward system
   enabled: true
 
+# --- HEART SHOP ---
+# Buy hearts with PlayerPoints
+heartshop:
+  # Enable/disable heart shop
+  enabled: true
+  
+  # Prices for different heart packages
+  prices:
+    1-heart: 1000
+    5-hearts: 4500
+    10-hearts: 8000
+
 # --- TEAM SYSTEM ---
 teams:
   # Minimum characters for team name

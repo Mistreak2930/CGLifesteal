@@ -23,8 +23,10 @@
 /workspaces/Lifesteal/src/main/java/com/example/lifesteal/listeners/TeamChatListener.java
 /workspaces/Lifesteal/src/main/java/com/example/lifesteal/commands/HeartsCommand.java
 /workspaces/Lifesteal/src/main/java/com/example/lifesteal/commands/DepositCommand.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/commands/HeartShopCommand.java
 /workspaces/Lifesteal/src/main/java/com/example/lifesteal/util/HeartItemUtil.java
 /workspaces/Lifesteal/src/main/java/com/example/lifesteal/listeners/PlayerJoinListener.java
+/workspaces/Lifesteal/src/main/java/com/example/lifesteal/listeners/HeartShopListener.java
 /workspaces/Lifesteal/src/main/java/com/example/lifesteal/commands/TakeHeartCommand.java
 /workspaces/Lifesteal/src/main/java/com/example/lifesteal/commands/TeamChatCommand.java
 /workspaces/Lifesteal/src/main/java/com/example/lifesteal/gui/HeartShopGUI.java

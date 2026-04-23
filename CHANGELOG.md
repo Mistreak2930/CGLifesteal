@@ -1,0 +1,65 @@
+# Changelog
+
+All notable changes to the Lifesteal plugin will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.4.0] - 2026-04-23
+
+### Added
+- **Heart Shop**: Re-enabled the heart shop feature allowing players to purchase hearts using PlayerPoints
+  - Added `/heartshop` command with alias `/hshop`
+  - Added HeartShopGUI with three purchase tiers (1 heart, 5 hearts, 10 hearts)
+  - Added HeartShopListener to handle GUI interactions
+  - Added heartshop configuration section in config.yml
+  - Added shop-related messages in messages.yml
+  - Integrated with PlayerPoints API for point transactions
+
+### Changed
+- Updated plugin version from 1.3.0 to 1.4.0
+- Improved command registration and listener management
+
+### Fixed
+- Restored heart shop functionality that was previously disabled
+
+## [1.3.0] - 2024-XX-XX
+
+### Added
+- Team Wars system
+- Bundle reward system
+- Orbits currency system
+- Enhanced GUI system
+- Daily rewards
+- Lottery system
+
+### Changed
+- Improved heart management
+- Enhanced team system
+
+### Fixed
+- Various bug fixes and improvements
+
+## [1.2.0] - 2024-XX-XX
+
+### Added
+- Basic team system
+- Heart withdrawal/deposit system
+- GUI interfaces
+
+### Changed
+- Improved configuration options
+
+## [1.1.0] - 2024-XX-XX
+
+### Added
+- Basic lifesteal mechanics
+- Heart management commands
+- Player death handling
+
+## [1.0.0] - 2024-XX-XX
+
+### Added
+- Initial release
+- Core lifesteal functionality
+- Basic commands and permissions

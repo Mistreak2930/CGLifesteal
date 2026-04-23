@@ -27,6 +27,8 @@ com/example/lifesteal/listeners/TeamGUIListener.class
 com/example/lifesteal/commands/LotteryCommand.class
 com/example/lifesteal/commands/TeamChatCommand.class
 com/example/lifesteal/system/HeartManager.class
+com/example/lifesteal/listeners/HeartShopListener.class
+com/example/lifesteal/commands/HeartShopCommand.class
 com/example/lifesteal/listeners/DailyRewardListener.class
 com/example/lifesteal/config/MessageManager.class
 com/example/lifesteal/gui/TeamGUI.class

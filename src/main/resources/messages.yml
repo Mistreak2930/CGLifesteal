@@ -99,3 +99,11 @@ team:
   no-teams: "§cNo teams exist yet!"
   death-notify: "§c{player} was killed by {killer}!"
   kill-notify: "§a{player} killed {victim}!"
+
+# Shop Messages
+shop:
+  opened: "§aHeart shop opened! Use points to buy hearts."
+  closed: "§aHeart shop closed."
+  purchase-success: "§aSuccessfully purchased §e{amount}§a hearts for §e{price}§a points!"
+  insufficient-points: "§cInsufficient points! You need §e{price}§c points, you have §e{current}§c points."
+  disabled: "§cHeart shop is currently disabled!"

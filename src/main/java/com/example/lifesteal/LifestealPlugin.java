@@ -84,7 +84,7 @@ public class LifestealPlugin extends JavaPlugin {
         
         // Register commands
         registerCommands();
-        getLogger().info("✓ All commands registered (13 commands)");
+        getLogger().info("✓ All commands registered (14 commands)");
         
         // Register listeners
         registerListeners();
@@ -226,6 +226,7 @@ public class LifestealPlugin extends JavaPlugin {
         getCommand("takeheart").setExecutor(new TakeHeartCommand(this));
         getCommand("lottery").setExecutor(new LotteryCommand(this));
         getCommand("dailyreward").setExecutor(new DailyRewardCommand(this));
+        getCommand("heartshop").setExecutor(new HeartShopCommand(this));
         getCommand("withdraw").setExecutor(new WithdrawCommand(this));
         getCommand("deposit").setExecutor(new DepositCommand(this));
         getCommand("team").setExecutor(new TeamCommand(this));
@@ -246,6 +247,7 @@ public class LifestealPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new HeartItemListener(this), this);
         getServer().getPluginManager().registerEvents(new TeamGUIListener(this), this);
         getServer().getPluginManager().registerEvents(new BundleGUIListener(this, bundleManager), this);
+        getServer().getPluginManager().registerEvents(new HeartShopListener(this), this);
         
         // Only register if managers are available (requires PlayerPoints)
         if (lotteryManager != null && dailyRewardManager != null) {
