@@ -1,4 +1,4 @@
-# CGLifesteal 1.5.1
+# CGLifesteal 1.5.2
 
 CGLifesteal is a Paper 26.3 plugin built with Java 25. It provides configurable lifesteal hearts, teams and team wars, orbits, daily bundles, a heart shop, lottery, PlaceholderAPI expansion, and player-facing GUIs.
 
@@ -8,7 +8,7 @@ CGLifesteal is a Paper 26.3 plugin built with Java 25. It provides configurable 
 mvn clean package
 ```
 
-The release artifact is `target/CGLifesteal-1.5.1.jar`.
+The release artifact is `target/CGLifesteal-1.5.2.jar`.
 
 ## Optional Integrations
 
@@ -18,8 +18,8 @@ The release artifact is `target/CGLifesteal-1.5.1.jar`.
 
 ## Configuration
 
-The default config lives in `src/main/resources/config.yml` and is copied to `plugins/CGLifesteal/config.yml` on startup. It includes configurable heart/team limits and GUI titles, themes, icons, layouts, and button slots. Use `/lifestealreload` to apply config changes.
+The default config lives in `src/main/resources/config.yml` and is copied to `plugins/Lifesteal/config.yml` on startup. It includes configurable heart/team limits and GUI titles, themes, icons, layouts, and button slots. Use `/lifesteal:lifestealreload` to apply config changes.
 
-On upgrade from the previous `Lifesteal` plugin name, the data folder is migrated automatically to `CGLifesteal`; back up server data before upgrading.
+Commands are available in both their normal form and the namespaced `/lifesteal:<command>` form. Existing `CGLifesteal` data files are copied when missing from the new `Lifesteal` data folder.
 
 See [README.md](README.md), [BUILD.md](BUILD.md), [INSTALL.md](INSTALL.md), and [CHANGELOG.md](CHANGELOG.md) for user and release documentation.

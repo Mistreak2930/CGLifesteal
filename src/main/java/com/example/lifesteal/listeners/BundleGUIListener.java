@@ -2,6 +2,7 @@ package com.example.lifesteal.listeners;
 
 import com.example.lifesteal.LifestealPlugin;
 import com.example.lifesteal.gui.BundleShopGUI;
+import com.example.lifesteal.gui.BundleSpinGUI;
 import com.example.lifesteal.gui.GuiUtil;
 import com.example.lifesteal.gui.HeartShopGUI;
 import com.example.lifesteal.gui.LotteryGUI;
@@ -10,14 +11,11 @@ import com.example.lifesteal.gui.TeamGUI;
 import com.example.lifesteal.system.BundleManager;
 import com.example.lifesteal.system.BundleManager.BundleReward;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashSet;
 import java.util.List;
@@ -30,8 +28,8 @@ import java.util.UUID;
  */
 public class BundleGUIListener implements Listener {
     
-    private LifestealPlugin plugin;
-    private BundleManager bundleManager;
+    private final LifestealPlugin plugin;
+    private final BundleManager bundleManager;
     private final Set<UUID> openingBundles = new HashSet<>();
     
     public BundleGUIListener(LifestealPlugin plugin, BundleManager bundleManager) {
@@ -46,8 +44,8 @@ public class BundleGUIListener implements Listener {
             guiId = "menu";
         } else if (GuiUtil.isGui(event.getView().getTopInventory(), "bundles")) {
             guiId = "bundles";
-        } else if (GuiUtil.isGui(event.getView().getTopInventory(), "bundle-rewards")) {
-            guiId = "bundle-rewards";
+        } else if (GuiUtil.isGui(event.getView().getTopInventory(), "bundle-spin")) {
+            guiId = "bundle-spin";
         } else {
             return;
         }
@@ -68,8 +66,6 @@ public class BundleGUIListener implements Listener {
             handleMainMenuClick(player, slot);
         } else if (guiId.equals("bundles")) {
             handleBundleShopClick(player, slot);
-        } else {
-            handleBundleDetailClick(player, slot);
         }
     }
     
@@ -107,26 +103,15 @@ public class BundleGUIListener implements Listener {
      * Handle clicks in the Bundle Shop GUI
      */
     private void handleBundleShopClick(Player player, int slot) {
-        int[] bundleSlots = {
-            GuiUtil.slot(plugin, "bundles", "bundle-1", 20, 54),
-            GuiUtil.slot(plugin, "bundles", "bundle-2", 22, 54),
-            GuiUtil.slot(plugin, "bundles", "bundle-3", 24, 54)
-        };
-        for (int i = 0; i < bundleSlots.length; i++) {
-            if (slot == bundleSlots[i]) {
-                int bundleNumber = i + 1;
-                int availableBundles = bundleManager.getAvailableBundles(player);
-                if (bundleNumber <= availableBundles) {
-                    player.closeInventory();
-                    new BundleShopGUI(plugin, player).openBundleDetail();
-                    player.sendMessage("§8[§dBundles§8] §eViewing bundle contents...");
-                } else {
-                    player.sendMessage("§8[§dBundles§8] §cThis bundle has already been claimed!");
-                    player.sendMessage("§8[§dBundles§8] §7Next reset in: §e"
-                        + formatTime(bundleManager.getTimeUntilReset(player)));
-                }
+        if (slot == GuiUtil.slot(plugin, "bundles", "open", 22, 54)) {
+            if (!bundleManager.canClaimBundle(player)) {
+                player.sendMessage("§8[§dBundles§8] §cYou don't have any bundles available!");
+                player.sendMessage("§8[§dBundles§8] §7Next reset in: §e"
+                    + formatTime(bundleManager.getTimeUntilReset(player)));
                 return;
             }
+            animateBundleOpening(player);
+            return;
         }
 
         if (slot == GuiUtil.slot(plugin, "bundles", "back", 48, 54)) {
@@ -137,48 +122,27 @@ public class BundleGUIListener implements Listener {
         }
     }
     
-    /**
-     * Handle clicks in the Bundle Detail GUI
-     */
-    private void handleBundleDetailClick(Player player, int slot) {
-        if (slot == GuiUtil.slot(plugin, "bundle-rewards", "next-reward", 13, 54)
-            || slot == GuiUtil.slot(plugin, "bundle-rewards", "open", 40, 54)) {
-            if (!bundleManager.canClaimBundle(player)) {
-                player.sendMessage("§8[§dBundles§8] §cYou don't have any bundles available!");
-                long timeUntil = bundleManager.getTimeUntilReset(player);
-                player.sendMessage("§8[§dBundles§8] §7Next reset in: §e" + formatTime(timeUntil));
-                return;
-            }
-            animateBundleOpening(player);
-        } else if (slot == GuiUtil.slot(plugin, "bundle-rewards", "back", 48, 54)) {
-            player.closeInventory();
-            new BundleShopGUI(plugin, player).open();
-        } else if (slot == GuiUtil.slot(plugin, "bundle-rewards", "close", 49, 54)) {
-            player.closeInventory();
-        }
-    }
-
     private void animateBundleOpening(Player player) {
         UUID playerId = player.getUniqueId();
         if (!openingBundles.add(playerId)) {
             return;
         }
 
-        Inventory inventory = player.getOpenInventory().getTopInventory();
-        Optional<BundleReward> availableReward = bundleManager.getCurrentReward(player);
-        if (availableReward.isEmpty()) {
+        Optional<BundleReward> selectedReward = bundleManager.selectRandomReward();
+        if (selectedReward.isEmpty()) {
             openingBundles.remove(playerId);
             player.sendMessage(plugin.getMessageManager().getMessage("bundles.no-rewards"));
             return;
         }
-        int rewardSlot = GuiUtil.slot(plugin, "bundle-rewards", "next-reward", 13, inventory.getSize());
-        BundleReward selectedReward = availableReward.get();
+
         List<BundleReward> possibleRewards = bundleManager.getAllPossibleRewards();
 
+        BundleSpinGUI spinGUI = new BundleSpinGUI(plugin);
+        Inventory inventory = spinGUI.open(player);
+        int rewardSlot = GuiUtil.slot(plugin, "bundle-spin", "reward", 13, inventory.getSize());
         int durationTicks = Math.max(1, plugin.getConfig().getInt("bundles.animation.duration-ticks", 40));
         int intervalTicks = Math.max(1, plugin.getConfig().getInt("bundles.animation.cycle-ticks", 3));
         int[] elapsedTicks = {0};
-        List<BundleReward> animationRewards = possibleRewards;
 
         Bukkit.getScheduler().runTaskTimer(plugin, task -> {
             if (!player.isOnline() || player.getOpenInventory().getTopInventory() != inventory) {
@@ -189,40 +153,27 @@ public class BundleGUIListener implements Listener {
 
             elapsedTicks[0] += intervalTicks;
             if (elapsedTicks[0] >= durationTicks) {
-                Optional<BundleReward> reward = bundleManager.openBundle(player, selectedReward);
+                var reward = bundleManager.openBundle(player, selectedReward.get());
                 openingBundles.remove(playerId);
                 task.cancel();
 
                 if (reward.isEmpty()) {
                     player.sendMessage(plugin.getMessageManager().getMessage("bundles.open-failed"));
+                    player.closeInventory();
                     return;
                 }
 
+                inventory.setItem(rewardSlot, spinGUI.createDisplay(reward.get()));
                 player.sendMessage(plugin.getMessageManager().getMessage("bundles.opened")
                     .replace("{reward}", reward.get().getDisplayName()));
                 player.closeInventory();
-                if (bundleManager.canClaimBundle(player)) {
-                    new BundleShopGUI(plugin, player).openBundleDetail();
-                } else {
-                    new BundleShopGUI(plugin, player).open();
-                }
                 return;
             }
 
-            BundleReward preview = animationRewards.get(
-                (int) (Math.random() * animationRewards.size()));
-            inventory.setItem(rewardSlot, createRewardDisplay(preview));
+            BundleReward preview = possibleRewards.get(
+                (int) (Math.random() * possibleRewards.size()));
+            inventory.setItem(rewardSlot, spinGUI.createDisplay(preview));
         }, 0L, intervalTicks);
-    }
-
-    private ItemStack createRewardDisplay(BundleReward reward) {
-        ItemStack item = new ItemStack(reward.getDisplayMaterial());
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName(reward.getDisplayName());
-            item.setItemMeta(meta);
-        }
-        return item;
     }
     
     /**

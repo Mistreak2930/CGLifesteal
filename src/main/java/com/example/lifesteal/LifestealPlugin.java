@@ -19,6 +19,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Stream;
 
 /**
  * Main plugin class for Lifesteal system
@@ -108,16 +110,30 @@ public class LifestealPlugin extends JavaPlugin {
 
     private void migrateLegacyDataFolder() {
         File currentFolder = getDataFolder();
-        File legacyFolder = new File(currentFolder.getParentFile(), "Lifesteal");
-        if (currentFolder.exists() || !legacyFolder.isDirectory()) {
+        File legacyFolder = new File(currentFolder.getParentFile(), "CGLifesteal");
+        if (!legacyFolder.isDirectory()) {
             return;
         }
 
         try {
-            Files.move(legacyFolder.toPath(), currentFolder.toPath());
-            getLogger().info("Migrated plugin data from Lifesteal to CGLifesteal.");
+            if (!currentFolder.exists()) {
+                Files.move(legacyFolder.toPath(), currentFolder.toPath());
+            } else {
+                Path legacyPath = legacyFolder.toPath();
+                try (Stream<Path> files = Files.walk(legacyPath)) {
+                    for (Path source : files.toList()) {
+                        Path destination = currentFolder.toPath().resolve(legacyPath.relativize(source));
+                        if (Files.isDirectory(source)) {
+                            Files.createDirectories(destination);
+                        } else if (!Files.exists(destination)) {
+                            Files.copy(source, destination);
+                        }
+                    }
+                }
+            }
+            getLogger().info("Migrated Lifesteal data from CGLifesteal where needed.");
         } catch (IOException exception) {
-            getLogger().severe("Could not migrate the existing Lifesteal data folder: " + exception.getMessage());
+            getLogger().severe("Could not migrate the existing CGLifesteal data folder: " + exception.getMessage());
         }
     }
 

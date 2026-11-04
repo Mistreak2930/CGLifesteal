@@ -53,10 +53,10 @@ public class MenuGUI {
         inventory.setItem(4, title);
 
         ItemStack bundlesShop = createItem(GuiUtil.material(plugin, "gui.materials.menu.bundles", Material.CHEST), "§d§lDaily Bundles",
-            "§7Three bundles are available each day.",
+            "§7Open one bundle at a time.",
             "",
             "§eAvailable Bundles: §a" + plugin.getBundleManager().getAvailableBundles(player) + "/" + plugin.getConfig().getInt("bundles.max-per-day", 3),
-            "§7Open each bundle for one reward.",
+            "§7Each opening gives a random reward.",
             "",
             "§e» Click to open!");
         inventory.setItem(GuiUtil.slot(plugin, "menu", "bundles", 20, 45), bundlesShop);

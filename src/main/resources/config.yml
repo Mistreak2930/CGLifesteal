@@ -121,15 +121,12 @@ team-wars:
 # --- BUNDLE SYSTEM ---
 # Daily reward bundles with randomized prizes
 bundles:
-  # Players automatically receive this many bundles each reset; opening a bundle grants only its configured reward.
+  # Players automatically receive this many bundles each reset; each opening grants one random configured reward.
   max-per-day: 3
   
   # Hours until daily bundles become available again
   reset-time-hours: 24
   
-  # Hours until the bundle reward preview changes
-  reward-refresh-hours: 12
-
   # Bundle opening animation timing (in server ticks; 20 ticks = 1 second)
   animation:
     duration-ticks: 40
@@ -176,7 +173,7 @@ gui:
   titles:
     menu: "<dark_red><bold>CGLifesteal</bold></dark_red>"
     bundles: "<light_purple><bold>Daily Bundles</bold></light_purple>"
-    bundle-rewards: "<light_purple><bold>Bundle Rewards</bold></light_purple>"
+    bundle-spin: "<light_purple><bold>Opening Bundle</bold></light_purple>"
     heartshop: "<red><bold>Heart Shop</bold></red>"
     lottery: "<gold><bold>Lottery</bold></gold>"
     team-main: "<gold>Team: {team}</gold>"
@@ -208,18 +205,12 @@ gui:
       stats: 31
       close: 40
     bundles:
-      bundle-1: 20
-      bundle-2: 22
-      bundle-3: 24
-      info: 31
-      preview: 40
+      open: 22
+      info: 40
       back: 48
       close: 49
-    bundle-rewards:
-      next-reward: 13
-      open: 40
-      back: 48
-      close: 49
+    bundle-spin:
+      reward: 13
     heartshop:
       one-heart: 19
       five-hearts: 22

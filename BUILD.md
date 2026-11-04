@@ -13,13 +13,13 @@ From the repository root, run:
 mvn clean package
 ```
 
-The packaged plugin is `target/CGLifesteal-1.5.1.jar`.
+The packaged plugin is `target/CGLifesteal-1.5.2.jar`.
 
 ## Server Requirements
 
 Run the plugin on Paper 26.3 with Java 25. PlayerPoints, Vault with an economy provider, and PlaceholderAPI are optional integrations. Features that require an absent integration are disabled.
 
-Install the JAR in the server's `plugins/` directory and restart the server. Configuration and data files are created in `plugins/CGLifesteal/`.
+Install the JAR in the server's `plugins/` directory and restart the server. Configuration and data files are created in `plugins/Lifesteal/`.
 
 ## Troubleshooting
 

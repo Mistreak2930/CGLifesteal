@@ -1,4 +1,4 @@
-# CGLifesteal 1.5.1
+# CGLifesteal 1.5.2
 
 A configurable Lifesteal plugin for Paper 26.3 servers, featuring heart management, teams and wars, a heart shop, lottery, daily bundles, and interactive GUIs. Requires Java 25.
 
@@ -11,7 +11,7 @@ A configurable Lifesteal plugin for Paper 26.3 servers, featuring heart manageme
   - **PlayerPoints** for points-based shops and rewards (optional)
   - **Vault** plus an economy provider for money features (optional)
 4. Restart your server
-5. Configure `plugins/CGLifesteal/config.yml` as needed
+5. Configure `plugins/Lifesteal/config.yml` as needed
 6. Restart again or use `/lifestealreload`
 
 ### Basic Commands
@@ -19,7 +19,9 @@ A configurable Lifesteal plugin for Paper 26.3 servers, featuring heart manageme
 - `/menu` - Open main menu (players)
 - `/team create [name]` - Create a team
 - `/lottery` - Buy lottery tickets
-- `/dailyreward` - Open your daily bundles
+- `/dailyreward`, `/bundle`, or `/bundles` - Open your daily bundles
+
+All commands and aliases also support the namespaced form, such as `/lifesteal:menu` or `/lifesteal:bundle`.
 
 ## 🎮 Features Overview
 
@@ -55,10 +57,10 @@ A configurable Lifesteal plugin for Paper 26.3 servers, featuring heart manageme
 
 ### 5. **Daily Bundles System** ✨ NEW
 - Automatically receive **3 bundles per day** (resets every 24 hours)
-- Open bundles to receive one random reward each
+- Open one bundle at a time from a single bundle button
+- Each opening randomly selects and grants one reward
 - Watch the reward animation and see the result announced in chat
-- Rewards refresh every **12 hours** or when opened
-- Preview your next reward before opening
+- The dedicated spin screen closes when the opening ends
 - View all possible rewards in the bundle
 - Track total bundles claimed
 
@@ -82,7 +84,7 @@ A configurable Lifesteal plugin for Paper 26.3 servers, featuring heart manageme
 - Multiple players can participate
 
 ### 7. **Daily Bundle Access**
-- `/dailyreward` - Open the daily bundles screen
+- `/dailyreward`, `/bundle`, or `/bundles` - Open the daily bundles screen
 - Bundles replenish automatically every 24 hours; no separate reward claim is needed
 - The daily reward flow grants no additional money or points
 
@@ -179,7 +181,7 @@ format: '{DISPLAYNAME} &7[%lifesteal_team_name_hover%&7] &f{MESSAGE}'
 - Ban players at 0 hearts
 
 ### 14. **Admin Features**
-- `/lifestealreload` - Reload plugin configuration without restarting
+- `/lifestealreload` or `/lifesteal:lifestealreload` - Reload plugin configuration without restarting
 - `/giveheart` - Give hearts to players
 - `/takeheart` - Remove hearts from players
 - `/orbits give/take` - Manage orbits
@@ -236,7 +238,7 @@ lifesteal.admin - Admin permissions (default: op)
    - Place these JARs in plugins/ folder and restart
 
 3. **Configure** (Optional)
-  - Edit `plugins/CGLifesteal/config.yml` with your preferences
+  - Edit `plugins/Lifesteal/config.yml` with your preferences
    - All settings have helpful comments explaining each option
    - Default values work for most servers
 
@@ -263,7 +265,7 @@ If you see warnings, check the Troubleshooting section below.
 ✅ **Team System** - Create teams, manage members, track stats
 ✅ **Team Wars** - Elimination-based team combat
 ✅ **Lottery System** - Hourly draws with prize pools
-✅ **Daily Rewards** - Money and PlayerPoints claims
+✅ **Daily Bundle Rewards** - Random rewards with an animated opening screen
 ✅ **Orbits System** - Secondary currency system
 ✅ **Physical Heart Trading** - Withdraw/deposit hearts as items
 ✅ **Team Chat** - Private team-only communication
@@ -302,13 +304,11 @@ If you see warnings, check the Troubleshooting section below.
 ### How It Works
 1. Open `/menu` and click "Daily Bundles"
 2. Three bundles become available automatically every 24 hours
-3. Click a bundle to view its contents
-4. See your "Next Reward" (refreshes every 12 hours)
-5. Click to open and receive the reward
+3. Use the single bundle button to open one bundle
+4. Watch the randomized reward spin; the menu closes when it finishes
 
 ### Bundle Tips
 - Open bundles daily to maximize rewards
-- Next reward is shown before opening
 - All possible rewards are visible
 - Track total bundles claimed in stats
 
@@ -331,7 +331,7 @@ If you see warnings, check the Troubleshooting section below.
 ### Runtime Issues
 
 **Hearts not saving**
-- Check file permissions on `plugins/CGLifesteal/` folder
+- Check file permissions on `plugins/Lifesteal/` folder
 - Ensure folder exists and is readable/writable
 - Verify disk space is available
 - Check console for permission errors
@@ -404,7 +404,7 @@ hearts-lost-on-death: 1
 hearts-gained-on-kill: 1
 ```
 
-For detailed configuration, see comments in `plugins/CGLifesteal/config.yml` after first run. GUI titles accept MiniMessage formatting; theme materials, button slots, heart bounds, and team limits can also be customized there.
+For detailed configuration, see comments in `plugins/Lifesteal/config.yml` after first run. GUI titles accept MiniMessage formatting; theme materials, button slots, heart bounds, and team limits can also be customized there.
 
 ## 💡 Tips & Tricks
 
@@ -416,14 +416,18 @@ For detailed configuration, see comments in `plugins/CGLifesteal/config.yml` aft
 
 ## 📊 Version Info
 
-- **Plugin Version**: 1.5.1
+- **Plugin Version**: 1.5.2
 - **Minecraft Version**: Paper 26.3
 - **Java**: 25+
 - **Optional integrations**: Vault, PlayerPoints, PlaceholderAPI
 
 ## 📝 Changelog
 
-### v1.5.1 (Current)
+### v1.5.2 (Current)
+- Added namespaced `/lifesteal:<command>` forms for all commands and aliases.
+- Consolidated the bundle opener, randomized rewards for each opening, and added a spin screen that closes when complete.
+
+### v1.5.1
 - Three daily bundles are granted automatically; bundle openings animate and announce the reward.
 - Lottery menu shows the next-draw countdown.
 - Fixed team leader membership and Heart Shop error messages on existing installations.
@@ -479,6 +483,6 @@ For issues or feature requests, review the console logs and troubleshooting sect
 
 ## 👥 Credits
 
-**CGLifesteal v1.5.1** - Developed by Coolguy1353 for Paper 26.3
+**CGLifesteal v1.5.2** - Developed by Coolguy1353 for Paper 26.3
 
 **Enjoy your enhanced Lifesteal experience!**

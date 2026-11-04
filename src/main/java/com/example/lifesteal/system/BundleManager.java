@@ -24,7 +24,6 @@ public class BundleManager {
     // Bundle configuration
     private int maxBundlesPerDay = 3;
     private long bundleResetTime = 24 * 60 * 60 * 1000L; // 24 hours in milliseconds
-    private long rewardRefreshTime = 12 * 60 * 60 * 1000L; // 12 hours in milliseconds
     
     public BundleManager(LifestealPlugin plugin) {
         this.plugin = plugin;
@@ -34,7 +33,6 @@ public class BundleManager {
         // Load configuration
         this.maxBundlesPerDay = plugin.getConfig().getInt("bundles.max-per-day", 3);
         this.bundleResetTime = plugin.getConfig().getLong("bundles.reset-time-hours", 24) * 60 * 60 * 1000L;
-        this.rewardRefreshTime = plugin.getConfig().getLong("bundles.reward-refresh-hours", 12) * 60 * 60 * 1000L;
     }
     
     /**
@@ -127,68 +125,6 @@ public class BundleManager {
     }
     
     /**
-     * Get time until next reward refresh (in seconds)
-     */
-    public long getTimeUntilRewardRefresh(Player player) {
-        UUID uuid = player.getUniqueId();
-        String path = "players." + uuid;
-        
-        long lastRefresh = bundleData.getLong(path + ".last-reward-refresh", 0);
-        long now = System.currentTimeMillis();
-        long timeSinceRefresh = now - lastRefresh;
-        long timeUntilRefresh = rewardRefreshTime - timeSinceRefresh;
-        
-        return Math.max(0, timeUntilRefresh / 1000);
-    }
-    
-    /**
-     * Get the current reward for a player
-     * This reward changes every 12 hours or when opened
-     */
-    public Optional<BundleReward> getCurrentReward(Player player) {
-        UUID uuid = player.getUniqueId();
-        String path = "players." + uuid;
-        List<BundleReward> possibleRewards = getAllPossibleRewards();
-        if (possibleRewards.isEmpty()) {
-            return Optional.empty();
-        }
-        
-        long lastRefresh = bundleData.getLong(path + ".last-reward-refresh", 0);
-        long now = System.currentTimeMillis();
-        String rewardType = bundleData.getString(path + ".current-reward.type");
-        boolean storedRewardAvailable = possibleRewards.stream()
-            .anyMatch(reward -> reward.getType().equals(rewardType));
-        
-        if (now - lastRefresh >= rewardRefreshTime || lastRefresh == 0 || !storedRewardAvailable) {
-            return refreshCurrentReward(player, possibleRewards);
-        }
-        
-        int rewardAmount = bundleData.getInt(path + ".current-reward.amount", 100);
-        return Optional.of(new BundleReward(rewardType, rewardAmount));
-    }
-    
-    /**
-     * Refresh the current reward for a player
-     */
-    private Optional<BundleReward> refreshCurrentReward(Player player) {
-        return refreshCurrentReward(player, getAllPossibleRewards());
-    }
-
-    private Optional<BundleReward> refreshCurrentReward(Player player, List<BundleReward> possibleRewards) {
-        if (possibleRewards.isEmpty()) {
-            return Optional.empty();
-        }
-
-        String path = "players." + player.getUniqueId();
-        BundleReward newReward = generateRandomReward(possibleRewards);
-        bundleData.set(path + ".current-reward.type", newReward.getType());
-        bundleData.set(path + ".current-reward.amount", newReward.getAmount());
-        bundleData.set(path + ".last-reward-refresh", System.currentTimeMillis());
-        saveBundleData();
-        return Optional.of(newReward);
-    }
-    
-    /**
      * Get all possible rewards in the bundle
      */
     public List<BundleReward> getAllPossibleRewards() {
@@ -232,15 +168,22 @@ public class BundleManager {
         
         return new BundleReward(template.getType(), amount);
     }
+
+    public Optional<BundleReward> selectRandomReward() {
+        List<BundleReward> possibleRewards = getAllPossibleRewards();
+        return possibleRewards.isEmpty()
+            ? Optional.empty()
+            : Optional.of(generateRandomReward(possibleRewards));
+    }
     
     /**
-     * Open a bundle and claim its selected reward
+     * Grant the selected reward for one available bundle.
      */
     public Optional<BundleReward> openBundle(Player player, BundleReward reward) {
         if (reward == null || !isRewardSupported(reward.getType()) || !canClaimBundle(player)) {
             return Optional.empty();
         }
-        
+
         UUID uuid = player.getUniqueId();
         String path = "players." + uuid;
         
@@ -254,9 +197,6 @@ public class BundleManager {
         
         bundleData.set(path + ".claimed-today", claimedToday + 1);
         bundleData.set(path + ".total-claimed", totalClaimed + 1);
-        
-        // Refresh the reward for next time
-        refreshCurrentReward(player);
         
         saveBundleData();
         

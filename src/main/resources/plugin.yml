@@ -1,5 +1,5 @@
-name: CGLifesteal
-version: 1.5.1
+name: Lifesteal
+version: 1.5.2
 main: com.example.lifesteal.LifestealPlugin
 api-version: '26.3'
 description: Modern Lifesteal plugin with teams, heart shop, lottery, daily bundles, and configurable GUIs
@@ -59,10 +59,10 @@ commands:
     aliases: [lotto]
   
   dailyreward:
-    description: Open your daily bundles
+    description: Open one of your available daily bundles
     usage: /dailyreward
     permission: lifesteal.user
-    aliases: [daily, dr]
+    aliases: [daily, dr, bundle, bundles]
   
   heartshop:
     description: Open the heart shop
@@ -225,23 +225,4 @@ permissions:
 
   lifesteal.orbits.admin:
     description: Give or take orbits
-    default: op
-
-permissions:
-  lifesteal.user:
-    description: Allow users to use basic lifesteal commands
-    default: true
-  lifesteal.hearts:
-    description: Allow users to view hearts
-    default: true
-  lifesteal.admin:
-    description: Allow admins to give/take hearts
-    default: op
-
-  lifesteal.orbits:
-    description: Allow users to view orbits
-    default: true
-
-  lifesteal.orbits.admin:
-    description: Allow admins to give/take orbits
     default: op
