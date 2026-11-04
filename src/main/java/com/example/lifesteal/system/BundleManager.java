@@ -12,8 +12,8 @@ import java.util.*;
 
 /**
  * Manages the daily bundle system
- * Players get 3 daily bundles per day by claiming every 24 hours
- * Each bundle contains multiple rewards that refresh every 12 hours
+ * Players automatically receive three bundle openings every 24 hours.
+ * Each bundle contains one randomized reward.
  */
 public class BundleManager {
     
@@ -145,38 +145,47 @@ public class BundleManager {
      * Get the current reward for a player
      * This reward changes every 12 hours or when opened
      */
-    public BundleReward getCurrentReward(Player player) {
+    public Optional<BundleReward> getCurrentReward(Player player) {
         UUID uuid = player.getUniqueId();
         String path = "players." + uuid;
+        List<BundleReward> possibleRewards = getAllPossibleRewards();
+        if (possibleRewards.isEmpty()) {
+            return Optional.empty();
+        }
         
         long lastRefresh = bundleData.getLong(path + ".last-reward-refresh", 0);
         long now = System.currentTimeMillis();
+        String rewardType = bundleData.getString(path + ".current-reward.type");
+        boolean storedRewardAvailable = possibleRewards.stream()
+            .anyMatch(reward -> reward.getType().equals(rewardType));
         
-        // Check if we need to refresh the reward
-        if (now - lastRefresh >= rewardRefreshTime || lastRefresh == 0) {
-            refreshCurrentReward(player);
+        if (now - lastRefresh >= rewardRefreshTime || lastRefresh == 0 || !storedRewardAvailable) {
+            return refreshCurrentReward(player, possibleRewards);
         }
         
-        // Get the stored reward
-        String rewardType = bundleData.getString(path + ".current-reward.type", "MONEY");
         int rewardAmount = bundleData.getInt(path + ".current-reward.amount", 100);
-        
-        return new BundleReward(rewardType, rewardAmount);
+        return Optional.of(new BundleReward(rewardType, rewardAmount));
     }
     
     /**
      * Refresh the current reward for a player
      */
-    private void refreshCurrentReward(Player player) {
-        UUID uuid = player.getUniqueId();
-        String path = "players." + uuid;
-        
-        BundleReward newReward = generateRandomReward();
-        
+    private Optional<BundleReward> refreshCurrentReward(Player player) {
+        return refreshCurrentReward(player, getAllPossibleRewards());
+    }
+
+    private Optional<BundleReward> refreshCurrentReward(Player player, List<BundleReward> possibleRewards) {
+        if (possibleRewards.isEmpty()) {
+            return Optional.empty();
+        }
+
+        String path = "players." + player.getUniqueId();
+        BundleReward newReward = generateRandomReward(possibleRewards);
         bundleData.set(path + ".current-reward.type", newReward.getType());
         bundleData.set(path + ".current-reward.amount", newReward.getAmount());
         bundleData.set(path + ".last-reward-refresh", System.currentTimeMillis());
         saveBundleData();
+        return Optional.of(newReward);
     }
     
     /**
@@ -193,7 +202,11 @@ public class BundleManager {
                 int minAmount = plugin.getConfig().getInt(path + ".min-amount");
                 int maxAmount = plugin.getConfig().getInt(path + ".max-amount");
                 
-                rewards.add(new BundleReward(type, minAmount, maxAmount));
+                if (!isKnownRewardType(type) || minAmount < 0 || maxAmount < minAmount) {
+                    plugin.getLogger().warning("Skipping invalid bundle reward: " + key);
+                } else if (isRewardSupported(type)) {
+                    rewards.add(new BundleReward(type, minAmount, maxAmount));
+                }
             }
         } else {
             // Default rewards
@@ -205,16 +218,15 @@ public class BundleManager {
             rewards.add(new BundleReward("ITEM_EMERALD", 1, 10));
         }
         
+        rewards.removeIf(reward -> !isRewardSupported(reward.getType()));
         return rewards;
     }
     
     /**
      * Generate a random reward from possible rewards
      */
-    private BundleReward generateRandomReward() {
-        List<BundleReward> possibleRewards = getAllPossibleRewards();
+    private BundleReward generateRandomReward(List<BundleReward> possibleRewards) {
         Random random = new Random();
-        
         BundleReward template = possibleRewards.get(random.nextInt(possibleRewards.size()));
         int amount = template.getMinAmount() + random.nextInt(template.getMaxAmount() - template.getMinAmount() + 1);
         
@@ -222,21 +234,19 @@ public class BundleManager {
     }
     
     /**
-     * Open a bundle and claim the current reward
+     * Open a bundle and claim its selected reward
      */
-    public boolean openBundle(Player player) {
-        if (!canClaimBundle(player)) {
-            return false;
+    public Optional<BundleReward> openBundle(Player player, BundleReward reward) {
+        if (reward == null || !isRewardSupported(reward.getType()) || !canClaimBundle(player)) {
+            return Optional.empty();
         }
         
         UUID uuid = player.getUniqueId();
         String path = "players." + uuid;
         
-        // Get current reward
-        BundleReward reward = getCurrentReward(player);
-        
-        // Give reward to player
-        giveReward(player, reward);
+        if (!giveReward(player, reward)) {
+            return Optional.empty();
+        }
         
         // Update stats
         int claimedToday = bundleData.getInt(path + ".claimed-today", 0);
@@ -250,65 +260,96 @@ public class BundleManager {
         
         saveBundleData();
         
-        return true;
+        return Optional.of(reward);
     }
     
     /**
      * Give a reward to a player
      */
-    private void giveReward(Player player, BundleReward reward) {
+    private boolean giveReward(Player player, BundleReward reward) {
         String type = reward.getType();
         int amount = reward.getAmount();
         
         switch (type) {
             case "MONEY":
-                if (plugin.hasEconomy()) {
-                    plugin.getEconomy().depositPlayer(player, amount);
-                    player.sendMessage("§a§l✔ §aYou received §e$" + amount + "§a!");
-                }
-                break;
+                return plugin.hasEconomy()
+                    && plugin.getEconomy().depositPlayer(player, amount).transactionSuccess();
                 
             case "POINTS":
-                if (plugin.hasPlayerPoints()) {
-                    try {
-                        Object api = plugin.getPlayerPointsAPI();
-                        api.getClass().getMethod("give", UUID.class, int.class).invoke(api, player.getUniqueId(), amount);
-                        player.sendMessage("§a§l✔ §aYou received §e" + amount + " Points§a!");
-                    } catch (Exception e) {
-                        plugin.getLogger().warning("Failed to give points: " + e.getMessage());
-                    }
+                try {
+                    Object api = plugin.getPlayerPointsAPI();
+                    Object result = api.getClass().getMethod("give", UUID.class, int.class)
+                        .invoke(api, player.getUniqueId(), amount);
+                    return Boolean.TRUE.equals(result);
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Failed to give points: " + e.getMessage());
+                    return false;
                 }
-                break;
                 
             case "HEARTS":
+                if (plugin.getHeartManager().getHearts(player) + amount > plugin.getHeartManager().getMaxHearts()) {
+                    return false;
+                }
                 plugin.getHeartManager().addHearts(player, amount);
-                player.sendMessage("§a§l✔ §aYou received §c" + amount + " Heart(s)§a!");
-                break;
+                return true;
                 
             case "ORBITS":
                 plugin.getOrbitsManager().addOrbits(player.getUniqueId(), amount);
-                player.sendMessage("§a§l✔ §aYou received §d" + amount + " Orbit(s)§a!");
-                break;
+                return true;
                 
             case "ITEM_DIAMOND":
-                player.getInventory().addItem(new org.bukkit.inventory.ItemStack(Material.DIAMOND, amount));
-                player.sendMessage("§a§l✔ §aYou received §b" + amount + " Diamond(s)§a!");
-                break;
+                return giveItem(player, Material.DIAMOND, amount);
                 
             case "ITEM_EMERALD":
-                player.getInventory().addItem(new org.bukkit.inventory.ItemStack(Material.EMERALD, amount));
-                player.sendMessage("§a§l✔ §aYou received §2" + amount + " Emerald(s)§a!");
-                break;
+                return giveItem(player, Material.EMERALD, amount);
                 
             case "ITEM_IRON_INGOT":
-                player.getInventory().addItem(new org.bukkit.inventory.ItemStack(Material.IRON_INGOT, amount));
-                player.sendMessage("§a§l✔ §aYou received §f" + amount + " Iron Ingot(s)§a!");
-                break;
+                return giveItem(player, Material.IRON_INGOT, amount);
                 
             case "ITEM_GOLD_INGOT":
-                player.getInventory().addItem(new org.bukkit.inventory.ItemStack(Material.GOLD_INGOT, amount));
-                player.sendMessage("§a§l✔ §aYou received §6" + amount + " Gold Ingot(s)§a!");
-                break;
+                return giveItem(player, Material.GOLD_INGOT, amount);
+            default:
+                return false;
+        }
+    }
+
+    private boolean giveItem(Player player, Material material, int amount) {
+        Map<Integer, org.bukkit.inventory.ItemStack> leftovers =
+            player.getInventory().addItem(new org.bukkit.inventory.ItemStack(material, amount));
+        leftovers.values().forEach(item -> player.getWorld().dropItemNaturally(player.getLocation(), item));
+        return true;
+    }
+
+    private boolean isRewardSupported(String type) {
+        if (type == null) {
+            return false;
+        }
+        switch (type) {
+            case "MONEY":
+                return plugin.hasEconomy();
+            case "POINTS":
+                return plugin.hasPlayerPoints();
+            default:
+                return isKnownRewardType(type);
+        }
+    }
+
+    private boolean isKnownRewardType(String type) {
+        if (type == null) {
+            return false;
+        }
+        switch (type) {
+            case "MONEY":
+            case "POINTS":
+            case "HEARTS":
+            case "ORBITS":
+            case "ITEM_DIAMOND":
+            case "ITEM_EMERALD":
+            case "ITEM_IRON_INGOT":
+            case "ITEM_GOLD_INGOT":
+                return true;
+            default:
+                return false;
         }
     }
     

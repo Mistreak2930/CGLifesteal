@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * GUI for the daily bundles shop
@@ -95,14 +96,18 @@ public class BundleShopGUI {
         inventory.setItem(GuiUtil.slot(plugin, "bundles", "info", 31, 54), info);
         
         // Current reward preview (slot 40)
-        BundleReward currentReward = bundleManager.getCurrentReward(player);
-        ItemStack rewardPreview = createItem(currentReward.getDisplayMaterial(), 
-            "§6§lNext Reward", 
-            "§7Your next bundle will contain:",
-            "",
-            "§e" + currentReward.getDisplayName(),
-            "",
-            "§7Refreshes: §e" + formatTime(timeUntilRefresh));
+        Optional<BundleReward> currentReward = bundleManager.getCurrentReward(player);
+        ItemStack rewardPreview = currentReward
+            .map(reward -> createItem(reward.getDisplayMaterial(),
+                "§6§lNext Reward",
+                "§7Your next bundle will contain:",
+                "",
+                "§e" + reward.getDisplayName(),
+                "",
+                "§7Refreshes: §e" + formatTime(timeUntilRefresh)))
+            .orElseGet(() -> createItem(Material.BARRIER, "§c§lNo Rewards Available",
+                "§7No configured bundle rewards are",
+                "§7available with the current integrations."));
         inventory.setItem(GuiUtil.slot(plugin, "bundles", "preview", 40, 54), rewardPreview);
         
         // Back button (slot 48)
@@ -147,18 +152,21 @@ public class BundleShopGUI {
         inventory.setItem(4, title);
         
         // Current reward (highlighted)
-        BundleReward currentReward = bundleManager.getCurrentReward(player);
+        Optional<BundleReward> currentReward = bundleManager.getCurrentReward(player);
         long timeUntilRefresh = bundleManager.getTimeUntilRewardRefresh(player);
-        
-        ItemStack nextReward = createItem(currentReward.getDisplayMaterial(), 
-            "§6§l⭐ NEXT REWARD ⭐", 
-            "§7This is your next reward!",
-            "",
-            "§e" + currentReward.getDisplayName(),
-            "",
-            "§7Refreshes: §e" + formatTime(timeUntilRefresh),
-            "",
-            "§a§l» Click to claim bundle!");
+        ItemStack nextReward = currentReward
+            .map(reward -> createItem(reward.getDisplayMaterial(),
+                "§6§l⭐ NEXT REWARD ⭐",
+                "§7This is your next reward!",
+                "",
+                "§e" + reward.getDisplayName(),
+                "",
+                "§7Refreshes: §e" + formatTime(timeUntilRefresh),
+                "",
+                "§a§l» Click to open a bundle!"))
+            .orElseGet(() -> createItem(Material.BARRIER, "§c§lNo Rewards Available",
+                "§7No configured bundle rewards are",
+                "§7available with the current integrations."));
         inventory.setItem(GuiUtil.slot(plugin, "bundle-rewards", "next-reward", 13, 54), nextReward);
         
         // All possible rewards

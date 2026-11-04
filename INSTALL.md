@@ -1,4 +1,4 @@
-# CGLifesteal 1.5.0 Installation
+# CGLifesteal 1.5.1 Installation
 
 ## Requirements
 
@@ -10,7 +10,7 @@
 
 ## Install
 
-1. Download `CGLifesteal-1.5.0.jar` from the public GitHub release.
+1. Download `CGLifesteal-1.5.1.jar` from the public GitHub release.
 2. Put the JAR in the server's `plugins/` directory.
 3. Start the server. Configuration and data files are created in `plugins/CGLifesteal/`.
 4. Install optional integrations and restart to enable their features.
@@ -38,5 +38,5 @@ The shipped defaults are ready to use. Optional integrations can be absent; thei
 - `/hearts [player]` views heart counts.
 - `/heartshop` opens the points-based heart shop.
 - `/team` manages teams.
-- `/lottery` and `/dailyreward` open points-based reward screens.
+- `/lottery` opens the money-based lottery; `/dailyreward` opens your daily bundles.
 - `/lifestealreload` reloads the configuration and managers (admin permission required).

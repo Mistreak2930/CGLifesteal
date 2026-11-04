@@ -1,7 +1,6 @@
 package com.example.lifesteal.gui;
 
 import com.example.lifesteal.LifestealPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -54,10 +53,10 @@ public class MenuGUI {
         inventory.setItem(4, title);
 
         ItemStack bundlesShop = createItem(GuiUtil.material(plugin, "gui.materials.menu.bundles", Material.CHEST), "§d§lDaily Bundles",
-            "§7Open daily bundles to receive rewards!",
+            "§7Three bundles are available each day.",
             "",
             "§eAvailable Bundles: §a" + plugin.getBundleManager().getAvailableBundles(player) + "/" + plugin.getConfig().getInt("bundles.max-per-day", 3),
-            "§7Claim bundles every 24 hours",
+            "§7Open each bundle for one reward.",
             "",
             "§e» Click to open!");
         inventory.setItem(GuiUtil.slot(plugin, "menu", "bundles", 20, 45), bundlesShop);
@@ -76,20 +75,6 @@ public class MenuGUI {
             inventory.setItem(GuiUtil.slot(plugin, "menu", "lottery", 24, 45), lottery);
         }
 
-        if (plugin.hasDailyRewardManager()) {
-            boolean canClaim = plugin.getDailyRewardManager().canClaimReward(player);
-            ItemStack dailyRewards = createItem(GuiUtil.material(plugin,
-                canClaim ? "gui.materials.menu.daily-rewards-ready" : "gui.materials.menu.daily-rewards-claimed",
-                canClaim ? Material.LIME_DYE : Material.GRAY_DYE),
-                "§6§lDaily Rewards", 
-                "§7Claim your daily rewards!",
-                "",
-                canClaim ? "§a✔ Ready to claim!" : "§c✖ Already claimed today",
-                "",
-                "§e» Click to open!");
-            inventory.setItem(GuiUtil.slot(plugin, "menu", "daily-rewards", 29, 45), dailyRewards);
-        }
-
         ItemStack teams = createItem(GuiUtil.material(plugin, "gui.materials.menu.teams", Material.PLAYER_HEAD), "§e§lTeams",
             "§7Manage your team",
             "",
@@ -97,7 +82,7 @@ public class MenuGUI {
             "§7Work together with friends",
             "",
             "§e» Click to open!");
-        inventory.setItem(GuiUtil.slot(plugin, "menu", "teams", 31, 45), teams);
+        inventory.setItem(GuiUtil.slot(plugin, "menu", "teams", 29, 45), teams);
 
         int hearts = plugin.getHeartManager().getHearts(player);
         long orbits = plugin.getOrbitsManager().getOrbits(player.getUniqueId());
@@ -107,7 +92,7 @@ public class MenuGUI {
             "§c❤ Hearts: §f" + hearts,
             "§d✦ Orbits: §f" + orbits,
             "§6⭐ Bundles Claimed: §f" + plugin.getBundleManager().getTotalBundlesClaimed(player));
-        inventory.setItem(GuiUtil.slot(plugin, "menu", "stats", 33, 45), stats);
+        inventory.setItem(GuiUtil.slot(plugin, "menu", "stats", 31, 45), stats);
 
         ItemStack close = createItem(GuiUtil.material(plugin, "gui.materials.menu.close", Material.BARRIER), "§c§lClose",
             "§7Click to close this menu");

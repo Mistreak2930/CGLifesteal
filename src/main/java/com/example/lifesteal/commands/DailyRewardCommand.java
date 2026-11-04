@@ -1,7 +1,7 @@
 package com.example.lifesteal.commands;
 
 import com.example.lifesteal.LifestealPlugin;
-import com.example.lifesteal.gui.DailyRewardGUI;
+import com.example.lifesteal.gui.BundleShopGUI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,26 +24,11 @@ public class DailyRewardCommand implements CommandExecutor {
         
         Player player = (Player) sender;
         
-        // Check if both Vault Economy and PlayerPoints are available
-        if (!plugin.hasEconomy()) {
-            player.sendMessage("§8[§cLifesteal§8] §c✗ Vault Economy plugin not found!");
-            player.sendMessage("§8[§cLifesteal§8] §eThe daily reward system requires Vault to work.");
-            return true;
-        }
-        
-        if (!plugin.hasPlayerPoints()) {
-            player.sendMessage("§8[§cLifesteal§8] §c✗ PlayerPoints plugin not found!");
-            player.sendMessage("§8[§cLifesteal§8] §eThe daily reward system requires PlayerPoints to work.");
-            return true;
-        }
-        
-        if (!plugin.hasDailyRewardManager()) {
-            player.sendMessage("§8[§cLifesteal§8] §cDaily reward system not available!");
-            return true;
-        }
-        
-        // Open daily reward GUI
-        new DailyRewardGUI(plugin, plugin.getDailyRewardManager(), player).open();
+        int availableBundles = plugin.getBundleManager().getAvailableBundles(player);
+        player.sendMessage(plugin.getMessageManager().getMessage("daily-bundles.available")
+            .replace("{available}", String.valueOf(availableBundles))
+            .replace("{total}", String.valueOf(plugin.getConfig().getInt("bundles.max-per-day", 3))));
+        new BundleShopGUI(plugin, player).open();
         return true;
     }
 }

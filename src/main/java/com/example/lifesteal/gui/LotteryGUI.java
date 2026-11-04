@@ -92,8 +92,8 @@ public class LotteryGUI {
             lore.add("§aWin a chance to earn");
             lore.add("§agreat rewards!");
             lore.add(" ");
-            lore.add("§eTicket Price: §c" + lotteryManager.getTicketPrice() + " points");
-            lore.add("§eDraw: §cEvery Hour");
+            lore.add("§eTicket Price: §c$" + lotteryManager.getTicketPrice());
+            lore.add("§eNext draw in: §a" + formatTime(lotteryManager.getTimeUntilNextDraw()));
             lore.add("§e═══════════════════");
             meta.setLore(lore);
             item.setItemMeta(meta);
@@ -220,5 +220,12 @@ public class LotteryGUI {
         } else {
             return String.format("%.0f", amount);
         }
+    }
+
+    private String formatTime(long seconds) {
+        long hours = seconds / 3600;
+        long minutes = (seconds % 3600) / 60;
+        long remainingSeconds = seconds % 60;
+        return String.format("%dh %dm %ds", hours, minutes, remainingSeconds);
     }
 }

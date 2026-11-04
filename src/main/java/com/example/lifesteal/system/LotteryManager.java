@@ -20,6 +20,7 @@ public class LotteryManager {
     private Set<UUID> lotteryTickets = new HashSet<>();
     private BukkitTask lotteryTask;
     private int ticketPrice = 100;
+    private long nextDrawAt;
     
     public LotteryManager(LifestealPlugin plugin) {
         this.plugin = plugin;
@@ -78,7 +79,7 @@ public class LotteryManager {
      * Setup the hourly lottery task
      */
     private void setupLotteryTask() {
-        // Run lottery every hour (3600 seconds = 72000 ticks)
+        nextDrawAt = System.currentTimeMillis() + 60 * 60 * 1000L;
         lotteryTask = Bukkit.getScheduler().runTaskTimer(plugin, this::drawLottery, 72000L, 72000L);
     }
     
@@ -120,6 +121,7 @@ public class LotteryManager {
      * Draw the lottery and pick a winner
      */
     private void drawLottery() {
+        nextDrawAt = System.currentTimeMillis() + 60 * 60 * 1000L;
         if (lotteryTickets.isEmpty()) {
             Bukkit.broadcastMessage("§8[§cLifesteal§8] §c⚠ No lottery tickets sold this hour!");
             return;
@@ -183,6 +185,10 @@ public class LotteryManager {
      */
     public int getTicketPrice() {
         return ticketPrice;
+    }
+
+    public long getTimeUntilNextDraw() {
+        return Math.max(0, (nextDrawAt - System.currentTimeMillis()) / 1000);
     }
     
     /**

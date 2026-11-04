@@ -1,6 +1,6 @@
-# CGLifesteal 1.5.0
+# CGLifesteal 1.5.1
 
-CGLifesteal is a Paper 26.3 plugin built with Java 25. It provides configurable lifesteal hearts, teams and team wars, orbits, bundles, a heart shop, lottery, daily rewards, PlaceholderAPI expansion, and player-facing GUIs.
+CGLifesteal is a Paper 26.3 plugin built with Java 25. It provides configurable lifesteal hearts, teams and team wars, orbits, daily bundles, a heart shop, lottery, PlaceholderAPI expansion, and player-facing GUIs.
 
 ## Build
 
@@ -8,7 +8,7 @@ CGLifesteal is a Paper 26.3 plugin built with Java 25. It provides configurable 
 mvn clean package
 ```
 
-The release artifact is `target/CGLifesteal-1.5.0.jar`.
+The release artifact is `target/CGLifesteal-1.5.1.jar`.
 
 ## Optional Integrations
 

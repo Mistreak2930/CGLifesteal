@@ -6,7 +6,6 @@ import com.example.lifesteal.listeners.*;
 import com.example.lifesteal.system.HeartManager;
 import com.example.lifesteal.system.TeamManager;
 import com.example.lifesteal.system.LotteryManager;
-import com.example.lifesteal.system.DailyRewardManager;
 import com.example.lifesteal.system.OrbitsManager;
 import com.example.lifesteal.system.BundleManager;
 import com.example.lifesteal.system.TeamWarManager;
@@ -32,7 +31,6 @@ public class LifestealPlugin extends JavaPlugin {
     private TeamManager teamManager;
     private MessageManager messageManager;
     private LotteryManager lotteryManager;
-    private DailyRewardManager dailyRewardManager;
     private OrbitsManager orbitsManager;
     private BundleManager bundleManager;
     private TeamWarManager teamWarManager;
@@ -69,6 +67,9 @@ public class LifestealPlugin extends JavaPlugin {
         // Setup Vault economy integration
         if (setupEconomy()) {
             getLogger().info("✓ Vault Economy integration enabled");
+            if (getConfig().getBoolean("lottery.enabled", true)) {
+                this.lotteryManager = new LotteryManager(this);
+            }
         } else {
             getLogger().warning("✗ Vault Economy not found - money features disabled");
         }
@@ -76,15 +77,8 @@ public class LifestealPlugin extends JavaPlugin {
         // Setup PlayerPoints integration
         if (setupPlayerPoints()) {
             getLogger().info("✓ PlayerPoints integration enabled");
-            
-            // Initialize economy-dependent managers
-            this.lotteryManager = new LotteryManager(this);
-            this.dailyRewardManager = new DailyRewardManager(this);
-            getLogger().info("✓ Lottery & Daily Reward systems initialized");
         } else {
             getLogger().warning("✗ PlayerPoints not found - points-based features are disabled (optional plugin)");
-            this.lotteryManager = null;
-            this.dailyRewardManager = null;
         }
         
         // Register commands
@@ -145,10 +139,6 @@ public class LifestealPlugin extends JavaPlugin {
         }
         if (orbitsManager != null) {
             orbitsManager.saveOrbits();
-            savedCount++;
-        }
-        if (dailyRewardManager != null) {
-            dailyRewardManager.saveDailyRewardData();
             savedCount++;
         }
         if (bundleManager != null) {
@@ -270,9 +260,8 @@ public class LifestealPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new HeartShopListener(this), this);
         
         // Only register if managers are available (requires PlayerPoints)
-        if (lotteryManager != null && dailyRewardManager != null) {
+        if (lotteryManager != null) {
             getServer().getPluginManager().registerEvents(new LotteryListener(this, lotteryManager), this);
-            getServer().getPluginManager().registerEvents(new DailyRewardListener(this, dailyRewardManager), this);
         }
     }
 
@@ -350,21 +339,7 @@ public class LifestealPlugin extends JavaPlugin {
      * Check if lottery manager is available
      */
     public boolean hasLotteryManager() {
-        return lotteryManager != null && hasPlayerPoints();
-    }
-
-    /**
-     * Get the daily reward manager
-     */
-    public DailyRewardManager getDailyRewardManager() {
-        return dailyRewardManager;
-    }
-
-    /**
-     * Check if daily reward manager is available
-     */
-    public boolean hasDailyRewardManager() {
-        return dailyRewardManager != null && hasPlayerPoints();
+        return lotteryManager != null;
     }
 
     /**

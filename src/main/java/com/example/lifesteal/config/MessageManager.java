@@ -6,6 +6,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -149,7 +152,30 @@ public class MessageManager {
     public void loadMessages() {
         messagesCache.clear();
         messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
-        
+
+        try (InputStream defaultsStream = plugin.getResource("messages.yml")) {
+            if (defaultsStream != null) {
+                FileConfiguration defaults = YamlConfiguration.loadConfiguration(
+                    new InputStreamReader(defaultsStream, StandardCharsets.UTF_8));
+                boolean changed = false;
+                for (String key : defaults.getKeys(true)) {
+                    if (!defaults.isConfigurationSection(key) && !messagesConfig.contains(key)) {
+                        messagesConfig.set(key, defaults.get(key));
+                        changed = true;
+                    }
+                }
+                if (changed) {
+                    try {
+                        messagesConfig.save(messagesFile);
+                    } catch (IOException e) {
+                        plugin.getLogger().warning("Failed to add default messages to messages.yml: " + e.getMessage());
+                    }
+                }
+            }
+        } catch (IOException e) {
+            plugin.getLogger().warning("Failed to load default messages: " + e.getMessage());
+        }
+
         for (String key : messagesConfig.getKeys(true)) {
             String value = messagesConfig.getString(key);
             if (value != null) {

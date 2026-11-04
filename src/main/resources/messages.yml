@@ -107,3 +107,12 @@ shop:
   purchase-success: "§aSuccessfully purchased §e{amount}§a hearts for §e{price}§a points!"
   insufficient-points: "§cInsufficient points! You need §e{price}§c points, you have §e{current}§c points."
   disabled: "§cHeart shop is currently disabled!"
+
+# Daily bundle messages
+daily-bundles:
+  available: "§dYou have §f{available}§d of §f{total}§d daily bundles ready to open."
+
+bundles:
+  opened: "§8[§dBundles§8] §aYou opened a bundle and received §f{reward}§a!"
+  open-failed: "§8[§dBundles§8] §cThe bundle could not be opened. Please try again."
+  no-rewards: "§8[§dBundles§8] §cNo configured bundle rewards are currently available."

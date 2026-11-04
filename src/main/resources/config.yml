@@ -68,18 +68,6 @@ lottery:
   # Enable/disable lottery system entirely
   enabled: true
 
-# --- DAILY REWARDS ---
-# Automatic daily claim system
-daily-reward:
-  # Money given per claim (requires Vault)
-  money: 100
-  
-  # Points given per claim (requires PlayerPoints)
-  points: 100
-  
-  # Enable/disable daily reward system
-  enabled: true
-
 # --- HEART SHOP ---
 # Buy hearts with PlayerPoints
 heartshop:
@@ -133,14 +121,19 @@ team-wars:
 # --- BUNDLE SYSTEM ---
 # Daily reward bundles with randomized prizes
 bundles:
-  # Number of bundles players get per day
+  # Players automatically receive this many bundles each reset; opening a bundle grants only its configured reward.
   max-per-day: 3
   
-  # Hours until bundle count resets
+  # Hours until daily bundles become available again
   reset-time-hours: 24
   
-  # Hours until next random reward is generated
+  # Hours until the bundle reward preview changes
   reward-refresh-hours: 12
+
+  # Bundle opening animation timing (in server ticks; 20 ticks = 1 second)
+  animation:
+    duration-ticks: 40
+    cycle-ticks: 3
   
   # Possible rewards (add/remove/modify as needed)
   possible-rewards:
@@ -185,7 +178,6 @@ gui:
     bundles: "<light_purple><bold>Daily Bundles</bold></light_purple>"
     bundle-rewards: "<light_purple><bold>Bundle Rewards</bold></light_purple>"
     heartshop: "<red><bold>Heart Shop</bold></red>"
-    daily-rewards: "<gold><bold>Daily Rewards</bold></gold>"
     lottery: "<gold><bold>Lottery</bold></gold>"
     team-main: "<gold>Team: {team}</gold>"
     team-members: "<gold>Team Members ({count})</gold>"
@@ -202,8 +194,6 @@ gui:
       bundles: CHEST
       heartshop: RED_DYE
       lottery: EMERALD
-      daily-rewards-ready: LIME_DYE
-      daily-rewards-claimed: GRAY_DYE
       teams: PLAYER_HEAD
       stats: BOOK
       close: BARRIER
@@ -214,9 +204,8 @@ gui:
       bundles: 20
       heartshop: 22
       lottery: 24
-      daily-rewards: 29
-      teams: 31
-      stats: 33
+      teams: 29
+      stats: 31
       close: 40
     bundles:
       bundle-1: 20
@@ -236,8 +225,6 @@ gui:
       five-hearts: 22
       ten-hearts: 25
       close: 49
-    daily-rewards:
-      claim: 13
     lottery:
       pool: 11
       buy: 13

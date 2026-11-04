@@ -55,6 +55,10 @@ public class TeamManager {
         
         for (String teamName : teamsConfig.getKeys(false)) {
             String leaderUUID = teamsConfig.getString(teamName + ".leader");
+            if (leaderUUID == null) {
+                plugin.getLogger().warning("Missing leader UUID in teams.yml for team: " + teamName);
+                continue;
+            }
             List<String> members = teamsConfig.getStringList(teamName + ".members");
             List<String> invites = teamsConfig.getStringList(teamName + ".invites");
             
@@ -68,21 +72,29 @@ public class TeamManager {
             List<UUID> inviteUUIDs = new ArrayList<>();
             
             try {
+                UUID leader = UUID.fromString(leaderUUID);
                 for (String member : members) {
                     UUID uuid = UUID.fromString(member);
-                    memberUUIDs.add(uuid);
-                    playerTeamMap.put(uuid, teamName);
+                    if (!memberUUIDs.contains(uuid)) {
+                        memberUUIDs.add(uuid);
+                    }
+                }
+                if (!memberUUIDs.contains(leader)) {
+                    memberUUIDs.add(leader);
                 }
                 for (String invite : invites) {
                     inviteUUIDs.add(UUID.fromString(invite));
                 }
                 
-                Team team = new Team(teamName, UUID.fromString(leaderUUID), memberUUIDs, inviteUUIDs);
+                Team team = new Team(teamName, leader, memberUUIDs, inviteUUIDs);
                 team.setKills(kills);
                 team.setDeaths(deaths);
                 team.setWins(wins);
                 team.setLosses(losses);
                 teamsCache.put(teamName, team);
+                for (UUID member : memberUUIDs) {
+                    playerTeamMap.put(member, teamName);
+                }
             } catch (IllegalArgumentException e) {
                 plugin.getLogger().warning("Invalid UUID in teams.yml for team: " + teamName);
             }
@@ -150,8 +162,20 @@ public class TeamManager {
 
     public Team getPlayerTeam(UUID uuid) {
         String teamName = playerTeamMap.get(uuid);
-        if (teamName == null) return null;
-        return teamsCache.get(teamName);
+        if (teamName != null) {
+            Team team = teamsCache.get(teamName);
+            if (team != null && (team.getLeader().equals(uuid) || team.isMember(uuid))) {
+                return team;
+            }
+        }
+
+        for (Team team : teamsCache.values()) {
+            if (team.getLeader().equals(uuid) || team.isMember(uuid)) {
+                playerTeamMap.put(uuid, team.getName());
+                return team;
+            }
+        }
+        return null;
     }
 
     public Team getPlayerTeam(Player player) {

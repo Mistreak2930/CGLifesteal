@@ -5,6 +5,19 @@ All notable changes to the Lifesteal plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2026-11-04
+
+### Changed
+- Daily rewards now provide three automatically replenished bundles; the old separate cash and points claim has been removed.
+- Bundle openings now animate the possible rewards and announce the reward actually granted.
+- Lottery menus show the countdown to the next draw.
+- Improved the main-menu layout and organized bundle animation settings in the config.
+- Existing messages files are supplemented with new default message keys without replacing custom messages.
+
+### Fixed
+- Team leaders in older team data are recognized as team members after loading.
+- Heart shop insufficient-points messages fall back to newly added defaults on existing installations.
+
 ## [1.5.0] - 2026-11-04
 
 ### Added

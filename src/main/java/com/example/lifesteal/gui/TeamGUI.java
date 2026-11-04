@@ -34,7 +34,7 @@ public class TeamGUI {
         TeamManager.Team team = teamManager.getPlayerTeam(player);
 
         if (team == null) {
-            player.sendMessage("§c[Team] §aYou are not in a team!");
+            player.sendMessage(plugin.getMessageManager().getMessage("team.not-in-team"));
             return;
         }
 
@@ -117,7 +117,7 @@ public class TeamGUI {
         TeamManager.Team team = teamManager.getPlayerTeam(player);
 
         if (team == null) {
-            player.sendMessage("§c[Team] §aYou are not in a team!");
+            player.sendMessage(plugin.getMessageManager().getMessage("team.not-in-team"));
             return;
         }
 

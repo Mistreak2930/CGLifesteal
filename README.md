@@ -1,6 +1,6 @@
-# CGLifesteal 1.5.0
+# CGLifesteal 1.5.1
 
-A configurable Lifesteal plugin for Paper 26.3 servers, featuring heart management, teams and wars, a heart shop, lottery, daily rewards, bundles, and interactive GUIs. Requires Java 25.
+A configurable Lifesteal plugin for Paper 26.3 servers, featuring heart management, teams and wars, a heart shop, lottery, daily bundles, and interactive GUIs. Requires Java 25.
 
 ## 📖 Quick Start
 
@@ -19,7 +19,7 @@ A configurable Lifesteal plugin for Paper 26.3 servers, featuring heart manageme
 - `/menu` - Open main menu (players)
 - `/team create [name]` - Create a team
 - `/lottery` - Buy lottery tickets
-- `/dailyreward` - Claim daily rewards
+- `/dailyreward` - Open your daily bundles
 
 ## 🎮 Features Overview
 
@@ -46,17 +46,17 @@ A configurable Lifesteal plugin for Paper 26.3 servers, featuring heart manageme
 ### 4. **Main Menu System** ✨ NEW
 - `/menu` - Opens the main hub GUI
 - Quick access to all plugin features:
-  - **Daily Bundles** - Claim daily rewards
+  - **Daily Bundles** - Open your automatically replenished bundles
   - **Heart Shop** - Purchase hearts with PlayerPoints
   - **Lottery** - Try your luck
-  - **Daily Rewards** - Claim money and points
   - **Teams** - Manage your team
 - View your personal stats (hearts, orbits, bundles claimed)
 - Beautiful, organized interface
 
 ### 5. **Daily Bundles System** ✨ NEW
-- Get **3 bundles per day** (resets every 24 hours)
-- Each bundle contains random rewards
+- Automatically receive **3 bundles per day** (resets every 24 hours)
+- Open bundles to receive one random reward each
+- Watch the reward animation and see the result announced in chat
 - Rewards refresh every **12 hours** or when opened
 - Preview your next reward before opening
 - View all possible rewards in the bundle
@@ -77,16 +77,14 @@ A configurable Lifesteal plugin for Paper 26.3 servers, featuring heart manageme
 - Buy lottery tickets with money
 - Win the entire prize pool
 - Lottery draws automatically every hour
+- See the countdown to the next draw in the lottery menu
 - Current pool and ticket count display
 - Multiple players can participate
 
-### 7. **Daily Reward System**
-- `/dailyreward` - Claim your daily rewards
-- Earn money and PlayerPoints daily
-- 24-hour cooldown between claims
-- Track total rewards claimed
-- Beautiful GUI with reward information
-- Automatic cooldown timer display
+### 7. **Daily Bundle Access**
+- `/dailyreward` - Open the daily bundles screen
+- Bundles replenish automatically every 24 hours; no separate reward claim is needed
+- The daily reward flow grants no additional money or points
 
 ### 8. **Orbits System** ✨
 - `/orbits see` - View your orbits
@@ -195,7 +193,7 @@ lifesteal.user - Basic user permissions (default: true)
   ├─ lifesteal.withdraw - Withdraw hearts (default: true)
   ├─ lifesteal.deposit - Deposit heart items (default: true)
   ├─ lifesteal.lottery - Access lottery (default: true)
-  ├─ lifesteal.daily-reward - Claim daily rewards (default: true)
+  ├─ lifesteal.daily-reward - Access daily bundles (default: true)
   ├─ lifesteal.menu - Open main menu (default: true)
   ├─ lifesteal.bundles - Access bundle system (default: true)
   ├─ lifesteal.teamwar - Use team wars (default: true)
@@ -215,7 +213,7 @@ lifesteal.admin - Admin permissions (default: op)
 - **Java 25** - Server runtime
 
 **Optional:**
-- **PlayerPoints** - Points currency for the heart shop, lottery, and daily rewards
+- **PlayerPoints** - Points currency for the heart shop and optional bundle rewards
 - **Vault** - Economy integration for money features
 - **PlaceholderAPI** - For advanced chat placeholder integration
 
@@ -303,7 +301,7 @@ If you see warnings, check the Troubleshooting section below.
 
 ### How It Works
 1. Open `/menu` and click "Daily Bundles"
-2. You get 3 bundles every 24 hours
+2. Three bundles become available automatically every 24 hours
 3. Click a bundle to view its contents
 4. See your "Next Reward" (refreshes every 12 hours)
 5. Click to open and receive the reward
@@ -410,7 +408,7 @@ For detailed configuration, see comments in `plugins/CGLifesteal/config.yml` aft
 
 ## 💡 Tips & Tricks
 
-1. **Balanced Economy** - Adjust lottery prices and daily rewards to match your server economy
+1. **Balanced Economy** - Adjust lottery prices and bundle rewards to match your server economy
 2. **Team Size** - Set `max-team-size` based on server player count
 3. **War Cooldown** - Increase `cooldown-minutes` if wars happen too frequently
 4. **Bundle Rewards** - Customize rewards to match your server themes
@@ -418,14 +416,20 @@ For detailed configuration, see comments in `plugins/CGLifesteal/config.yml` aft
 
 ## 📊 Version Info
 
-- **Plugin Version**: 1.5.0
+- **Plugin Version**: 1.5.1
 - **Minecraft Version**: Paper 26.3
 - **Java**: 25+
 - **Optional integrations**: Vault, PlayerPoints, PlaceholderAPI
 
 ## 📝 Changelog
 
-### v1.5.0 (Current)
+### v1.5.1 (Current)
+- Three daily bundles are granted automatically; bundle openings animate and announce the reward.
+- Lottery menu shows the next-draw countdown.
+- Fixed team leader membership and Heart Shop error messages on existing installations.
+- Improved menu layout and configuration organization.
+
+### v1.5.0
 - Paper 26.3 and Java 25 support
 - Configurable GUI titles, themes, icons, and button slots
 - Updated layouts and functional main-menu heart-shop navigation
@@ -475,6 +479,6 @@ For issues or feature requests, review the console logs and troubleshooting sect
 
 ## 👥 Credits
 
-**CGLifesteal v1.5.0** - Developed by Coolguy1353 for Paper 26.3
+**CGLifesteal v1.5.1** - Developed by Coolguy1353 for Paper 26.3
 
 **Enjoy your enhanced Lifesteal experience!**
