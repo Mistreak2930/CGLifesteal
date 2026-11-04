@@ -1,4 +1,4 @@
-# CGLifesteal 1.5.2
+# CGLifesteal 1.5.3
 
 A configurable Lifesteal plugin for Paper 26.3 servers, featuring heart management, teams and wars, a heart shop, lottery, daily bundles, and interactive GUIs. Requires Java 25.
 
@@ -416,14 +416,17 @@ For detailed configuration, see comments in `plugins/Lifesteal/config.yml` after
 
 ## 📊 Version Info
 
-- **Plugin Version**: 1.5.2
+- **Plugin Version**: 1.5.3
 - **Minecraft Version**: Paper 26.3
 - **Java**: 25+
 - **Optional integrations**: Vault, PlayerPoints, PlaceholderAPI
 
 ## 📝 Changelog
 
-### v1.5.2 (Current)
+### v1.5.3 (Current)
+- Fixed circular admin permission inheritance that caused startup stack overflow.
+
+### v1.5.2
 - Added namespaced `/lifesteal:<command>` forms for all commands and aliases.
 - Consolidated the bundle opener, randomized rewards for each opening, and added a spin screen that closes when complete.
 
@@ -483,6 +486,6 @@ For issues or feature requests, review the console logs and troubleshooting sect
 
 ## 👥 Credits
 
-**CGLifesteal v1.5.2** - Developed by Coolguy1353 for Paper 26.3
+**CGLifesteal v1.5.3** - Developed by Coolguy1353 for Paper 26.3
 
 **Enjoy your enhanced Lifesteal experience!**

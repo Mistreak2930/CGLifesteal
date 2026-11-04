@@ -1,5 +1,5 @@
 name: Lifesteal
-version: 1.5.2
+version: 1.5.3
 main: com.example.lifesteal.LifestealPlugin
 api-version: '26.3'
 description: Modern Lifesteal plugin with teams, heart shop, lottery, daily bundles, and configurable GUIs
@@ -132,7 +132,9 @@ permissions:
     description: Lifesteal admin permissions
     default: op
     children:
-      lifesteal.*: true
+      lifesteal.user: true
+      lifesteal.admin.reload: true
+      lifesteal.orbits.admin: true
   
   lifesteal.admin.reload:
     description: Reload plugin configuration

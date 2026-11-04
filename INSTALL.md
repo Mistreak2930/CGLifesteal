@@ -1,4 +1,4 @@
-# CGLifesteal 1.5.2 Installation
+# CGLifesteal 1.5.3 Installation
 
 ## Requirements
 
@@ -10,7 +10,7 @@
 
 ## Install
 
-1. Download `CGLifesteal-1.5.2.jar` from the public GitHub release.
+1. Download `CGLifesteal-1.5.3.jar` from the public GitHub release.
 2. Put the JAR in the server's `plugins/` directory.
 3. Start the server. Configuration and data files are created in `plugins/Lifesteal/`.
 4. Install optional integrations and restart to enable their features.

@@ -13,7 +13,7 @@ From the repository root, run:
 mvn clean package
 ```
 
-The packaged plugin is `target/CGLifesteal-1.5.2.jar`.
+The packaged plugin is `target/CGLifesteal-1.5.3.jar`.
 
 ## Server Requirements
 
