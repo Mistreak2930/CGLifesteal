@@ -2,6 +2,7 @@ package com.example.lifesteal.listeners;
 
 import com.example.lifesteal.LifestealPlugin;
 import com.example.lifesteal.util.HeartItemUtil;
+import com.example.lifesteal.gui.GuiUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,7 +33,7 @@ public class HeartItemListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        ItemStack item = player.getItemInHand();
+        ItemStack item = player.getInventory().getItemInMainHand();
 
         // Check if item is valid
         if (item == null || item.getType() == Material.AIR) {
@@ -54,7 +55,7 @@ public class HeartItemListener implements Listener {
             if (item.getAmount() > 1) {
                 item.setAmount(item.getAmount() - 1);
             } else {
-                player.getItemInHand().setType(Material.AIR);
+                player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
             }
 
             Map<String, String> replacements = new HashMap<>();
@@ -64,8 +65,7 @@ public class HeartItemListener implements Listener {
             return;
         }
         
-        // In 1.12.2, we need to check for INK_SACK instead of RED_DYE
-        if (item.getType() != Material.INK_SACK || item.getDurability() != 1) {
+        if (item.getType() != GuiUtil.material(plugin, "hearts.item.material", Material.RED_DYE)) {
             return;
         }
 
@@ -94,7 +94,7 @@ public class HeartItemListener implements Listener {
         if (item.getAmount() > 1) {
             item.setAmount(item.getAmount() - 1);
         } else {
-            player.getItemInHand().setType(Material.AIR);
+            player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
         }
 
         // Notify player
@@ -108,12 +108,7 @@ public class HeartItemListener implements Listener {
      * @return true if it's a heart item
      */
     private boolean isHeartItem(ItemStack item) {
-        // Check material (INK_SACK for 1.12.2, RED_DYE for 1.13+)
-        // In 1.12.2, red dye is INK_SACK with durability 1
-        if (item.getType() != Material.INK_SACK) {
-            return false;
-        }
-        if (item.getDurability() != 1) {
+        if (item.getType() != GuiUtil.material(plugin, "hearts.item.material", Material.RED_DYE)) {
             return false;
         }
 
@@ -128,7 +123,9 @@ public class HeartItemListener implements Listener {
             String displayName = meta.getDisplayName();
             // Remove color codes for comparison
             String cleanName = displayName.replaceAll("§[0-9a-fk-or]", "");
-            if (cleanName.equalsIgnoreCase("Heart")) {
+            String configuredName = plugin.getConfig().getString("hearts.item.name", "§cHeart")
+                .replaceAll("§[0-9a-fk-or]", "");
+            if (cleanName.equalsIgnoreCase(configuredName)) {
                 return true;
             }
         }

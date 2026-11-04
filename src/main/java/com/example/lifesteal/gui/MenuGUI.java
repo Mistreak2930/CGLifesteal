@@ -31,113 +31,88 @@ public class MenuGUI {
     }
     
     public void open() {
-        Inventory inventory = Bukkit.createInventory(null, 54, "§6§l✦ Main Menu ✦");
-        
-        // Fill background with black stained glass pane
-        ItemStack background = createPane(Material.STAINED_GLASS_PANE, " ");
-        background.setDurability((short) 15); // Black
-        for (int i = 0; i < 54; i++) {
+        Inventory inventory = GuiUtil.createInventory(plugin, "menu", 45, "<dark_red><bold>CGLifesteal</bold></dark_red>");
+
+        ItemStack background = createPane(GuiUtil.material(plugin, "gui.theme.background", Material.BLACK_STAINED_GLASS_PANE), " ");
+        for (int i = 0; i < 45; i++) {
             inventory.setItem(i, background);
         }
-        
-        // Create decorative border with colored panes
-        ItemStack borderPane = createPane(Material.STAINED_GLASS_PANE, "§e§l▬");
-        borderPane.setDurability((short) 4); // Yellow
+
+        ItemStack borderPane = createPane(GuiUtil.material(plugin, "gui.theme.accent", Material.RED_STAINED_GLASS_PANE), " ");
         for (int i = 0; i < 9; i++) {
             inventory.setItem(i, borderPane);
-            inventory.setItem(i + 45, borderPane);
+            inventory.setItem(i + 36, borderPane);
         }
-        for (int i = 9; i < 45; i += 9) {
+        for (int i = 9; i < 36; i += 9) {
             inventory.setItem(i, borderPane);
             inventory.setItem(i + 8, borderPane);
         }
-        
-        // Title item in center top
-        ItemStack title = createItem(Material.NETHER_STAR, "§6§l✦ Lifesteal Menu ✦", 
+
+        ItemStack title = createItem(Material.NETHER_STAR, "§6§l✦ Lifesteal Menu ✦",
             "§7Welcome " + player.getName() + "!",
-            "§7Select an option below");
+            "§7Hearts: §c" + plugin.getHeartManager().getHearts(player));
         inventory.setItem(4, title);
-        
-        // Bundles Shop (slot 20)
-        ItemStack bundlesShop = createItem(Material.CHEST, "§d§lDaily Bundles", 
+
+        ItemStack bundlesShop = createItem(GuiUtil.material(plugin, "gui.materials.menu.bundles", Material.CHEST), "§d§lDaily Bundles",
             "§7Open daily bundles to receive rewards!",
             "",
-            "§eAvailable Bundles: §a" + plugin.getBundleManager().getAvailableBundles(player) + "/3",
+            "§eAvailable Bundles: §a" + plugin.getBundleManager().getAvailableBundles(player) + "/" + plugin.getConfig().getInt("bundles.max-per-day", 3),
             "§7Claim bundles every 24 hours",
             "",
             "§e» Click to open!");
-        inventory.setItem(20, bundlesShop);
-        
-        // Warps (slot 22)
-        ItemStack warps = createItem(Material.ENDER_PEARL, "§b§lWarps", 
-            "§7Teleport to various locations",
-            "",
-            "§7Coming Soon!",
-            "",
-            "§c» Currently Disabled");
-        inventory.setItem(22, warps);
-        
-        // Heart Shop (slot 24)
-        ItemStack heartShop = createItem(Material.INK_SACK, "§c§lHeart Shop", 
-            "§7Purchase hearts and items",
-            "",
-            "§7Coming Soon!",
-            "",
-            "§c» Currently Disabled");
-        inventory.setItem(24, heartShop);
-        
-        // Lottery (slot 29)
+        inventory.setItem(GuiUtil.slot(plugin, "menu", "bundles", 20, 45), bundlesShop);
+
+        ItemStack heartShop = createItem(GuiUtil.material(plugin, "gui.materials.menu.heartshop", Material.RED_DYE), "§c§lHeart Shop",
+            "§7Purchase hearts with points", "", "§e» Click to open!");
+        inventory.setItem(GuiUtil.slot(plugin, "menu", "heartshop", 22, 45), heartShop);
+
         if (plugin.hasLotteryManager()) {
-            ItemStack lottery = createItem(Material.EMERALD, "§a§lLottery", 
+            ItemStack lottery = createItem(GuiUtil.material(plugin, "gui.materials.menu.lottery", Material.EMERALD), "§a§lLottery",
                 "§7Try your luck!",
                 "",
                 "§7Buy tickets and win big prizes",
                 "",
                 "§e» Click to open!");
-            inventory.setItem(29, lottery);
+            inventory.setItem(GuiUtil.slot(plugin, "menu", "lottery", 24, 45), lottery);
         }
-        
-        // Daily Rewards (slot 31)
+
         if (plugin.hasDailyRewardManager()) {
             boolean canClaim = plugin.getDailyRewardManager().canClaimReward(player);
-            ItemStack dailyRewards = createItem(
-                canClaim ? Material.INK_SACK : Material.INK_SACK, 
+            ItemStack dailyRewards = createItem(GuiUtil.material(plugin,
+                canClaim ? "gui.materials.menu.daily-rewards-ready" : "gui.materials.menu.daily-rewards-claimed",
+                canClaim ? Material.LIME_DYE : Material.GRAY_DYE),
                 "§6§lDaily Rewards", 
                 "§7Claim your daily rewards!",
                 "",
                 canClaim ? "§a✔ Ready to claim!" : "§c✖ Already claimed today",
                 "",
                 "§e» Click to open!");
-            dailyRewards.setDurability(canClaim ? (short) 10 : (short) 8); // Lime or Gray
-            inventory.setItem(31, dailyRewards);
+            inventory.setItem(GuiUtil.slot(plugin, "menu", "daily-rewards", 29, 45), dailyRewards);
         }
-        
-        // Teams (slot 33)
-        ItemStack teams = createItem(Material.SKULL_ITEM, "§e§lTeams", 
+
+        ItemStack teams = createItem(GuiUtil.material(plugin, "gui.materials.menu.teams", Material.PLAYER_HEAD), "§e§lTeams",
             "§7Manage your team",
             "",
             "§7Create or join a team",
             "§7Work together with friends",
             "",
             "§e» Click to open!");
-        inventory.setItem(33, teams);
-        
-        // Player Stats (slot 40)
+        inventory.setItem(GuiUtil.slot(plugin, "menu", "teams", 31, 45), teams);
+
         int hearts = plugin.getHeartManager().getHearts(player);
         long orbits = plugin.getOrbitsManager().getOrbits(player.getUniqueId());
-        ItemStack stats = createItem(Material.BOOK, "§b§lYour Stats", 
+        ItemStack stats = createItem(GuiUtil.material(plugin, "gui.materials.menu.stats", Material.BOOK), "§b§lYour Stats",
             "§7Current Statistics",
             "",
             "§c❤ Hearts: §f" + hearts,
             "§d✦ Orbits: §f" + orbits,
             "§6⭐ Bundles Claimed: §f" + plugin.getBundleManager().getTotalBundlesClaimed(player));
-        inventory.setItem(40, stats);
-        
-        // Close button (slot 49)
-        ItemStack close = createItem(Material.BARRIER, "§c§lClose", 
+        inventory.setItem(GuiUtil.slot(plugin, "menu", "stats", 33, 45), stats);
+
+        ItemStack close = createItem(GuiUtil.material(plugin, "gui.materials.menu.close", Material.BARRIER), "§c§lClose",
             "§7Click to close this menu");
-        inventory.setItem(49, close);
-        
+        inventory.setItem(GuiUtil.slot(plugin, "menu", "close", 40, 45), close);
+
         player.openInventory(inventory);
     }
     

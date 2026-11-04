@@ -18,9 +18,11 @@ import java.util.List;
  */
 public class TeamGUI {
 
+    private LifestealPlugin plugin;
     private TeamManager teamManager;
 
     public TeamGUI(LifestealPlugin plugin) {
+        this.plugin = plugin;
         this.teamManager = plugin.getTeamManager();
     }
 
@@ -36,8 +38,9 @@ public class TeamGUI {
             return;
         }
 
-        // Create inventory (size 27 = 3 rows, 9 columns)
-        Inventory gui = Bukkit.createInventory(null, 27, "§6Team: " + team.getName());
+        int inventorySize = GuiUtil.inventorySize(plugin, "gui.team.inventory-size", 27, 27, 54);
+        Inventory gui = GuiUtil.createInventory(plugin, "team-main", inventorySize, "<gold>Team: " + team.getName() + "</gold>",
+            java.util.Collections.singletonMap("team", team.getName()));
 
         // Get member names for info
         StringBuilder memberList = new StringBuilder();
@@ -56,35 +59,34 @@ public class TeamGUI {
                             Bukkit.getOfflinePlayer(team.getLeader()).getName() : "Unknown"),
             "§7Members: §e" + team.getMembers().size() + "/" + teamManager.getMaxTeamSize()
         });
-        gui.setItem(0, infoButton);
+        gui.setItem(GuiUtil.slot(plugin, "team-main", "info", 0, inventorySize), infoButton);
 
         // Button 2: View Members (Slot 1)
-        ItemStack membersButton = createButton(Material.SKULL_ITEM, "§aView Members", new String[]{
+        ItemStack membersButton = createButton(Material.PLAYER_HEAD, "§aView Members", new String[]{
             "§7Click to see team members",
             "§e" + team.getMembers().size() + " members"
         });
-        membersButton.setDurability((short) 3);
-        gui.setItem(1, membersButton);
+        gui.setItem(GuiUtil.slot(plugin, "team-main", "members", 1, inventorySize), membersButton);
 
         // Button 3: Invite Player (Slot 2)
         ItemStack inviteButton = createButton(Material.EMERALD, "§aInvite Player", new String[]{
             "§7Click to invite a player",
             "§7to your team"
         });
-        gui.setItem(2, inviteButton);
+        gui.setItem(GuiUtil.slot(plugin, "team-main", "invite", 2, inventorySize), inviteButton);
 
         // Button 4: Team Chat Toggle (Slot 3)
         ItemStack chatButton = createButton(Material.BOOK, "§aToggle Team Chat", new String[]{
             "§7Click to toggle team chat",
             "§7mode on/off"
         });
-        gui.setItem(3, chatButton);
+        gui.setItem(GuiUtil.slot(plugin, "team-main", "chat", 3, inventorySize), chatButton);
 
         // Button 5: Leave Team (Slot 4)
         ItemStack leaveButton = createButton(Material.REDSTONE, "§cLeave Team", new String[]{
             "§7Click to leave the team"
         });
-        gui.setItem(4, leaveButton);
+        gui.setItem(GuiUtil.slot(plugin, "team-main", "leave", 4, inventorySize), leaveButton);
 
         // Button 6: Delete Team (Slot 5) - Only for owner
         if (team.getLeader().equals(player.getUniqueId())) {
@@ -93,12 +95,12 @@ public class TeamGUI {
                 "§7Click to permanently",
                 "§7delete this team"
             });
-            gui.setItem(5, deleteButton);
+            gui.setItem(GuiUtil.slot(plugin, "team-main", "delete", 5, inventorySize), deleteButton);
         }
 
         // Filler items (wool) to make it look nice
-        ItemStack filler = createButton(Material.STAINED_GLASS_PANE, "§7", new String[0]);
-        for (int i = 9; i < 27; i++) {
+        ItemStack filler = createButton(GuiUtil.material(plugin, "gui.theme.background", Material.BLACK_STAINED_GLASS_PANE), "§7", new String[0]);
+        for (int i = 9; i < inventorySize; i++) {
             if (gui.getItem(i) == null) {
                 gui.setItem(i, filler);
             }
@@ -124,7 +126,9 @@ public class TeamGUI {
         int invSize = Math.min(27, ((memberCount / 9) + 1) * 9);
         if (invSize < 27) invSize = 27; // Minimum size
 
-        Inventory gui = Bukkit.createInventory(null, invSize, "§6Team Members (" + memberCount + ")");
+        Inventory gui = GuiUtil.createInventory(plugin, "team-members", invSize,
+            "<gold>Team Members (" + memberCount + ")</gold>",
+            java.util.Collections.singletonMap("count", String.valueOf(memberCount)));
 
         // Add member names as items
         int slot = 0;
@@ -132,10 +136,9 @@ public class TeamGUI {
             org.bukkit.OfflinePlayer member = Bukkit.getOfflinePlayer(memberUUID);
             String memberName = member.getName() != null ? member.getName() : "Unknown";
             
-            ItemStack memberItem = createButton(Material.SKULL_ITEM, "§a" + memberName, new String[]{
+            ItemStack memberItem = createButton(Material.PLAYER_HEAD, "§a" + memberName, new String[]{
                 "§7UUID: §e" + memberUUID
             });
-            memberItem.setDurability((short) 3);
             gui.setItem(slot++, memberItem);
         }
 
@@ -143,7 +146,7 @@ public class TeamGUI {
         ItemStack backButton = createButton(Material.ARROW, "§6Back", new String[]{
             "§7Click to go back"
         });
-        gui.setItem(invSize - 1, backButton);
+        gui.setItem(GuiUtil.slot(plugin, "team-members", "back", invSize - 1, invSize), backButton);
 
         player.openInventory(gui);
     }

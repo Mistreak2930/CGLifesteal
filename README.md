@@ -1,6 +1,6 @@
-# Lifesteal Plugin 1.3.0
+# CGLifesteal 1.5.0
 
-A comprehensive Lifesteal plugin for Minecraft 1.12.2 servers featuring hearts management, team systems with wars, lottery, daily rewards, bundles system, and dynamic GUI interfaces.
+A configurable Lifesteal plugin for Paper 26.3 servers, featuring heart management, teams and wars, a heart shop, lottery, daily rewards, bundles, and interactive GUIs. Requires Java 25.
 
 ## 📖 Quick Start
 
@@ -8,10 +8,10 @@ A comprehensive Lifesteal plugin for Minecraft 1.12.2 servers featuring hearts m
 1. Download the compiled JAR from releases
 2. Place JAR in your `plugins/` folder
 3. Install required plugins:
-   - **PlayerPoints** (required for lottery & daily rewards)
-   - **Vault** (required for economy integration)
+  - **PlayerPoints** for points-based shops and rewards (optional)
+  - **Vault** plus an economy provider for money features (optional)
 4. Restart your server
-5. Configure `plugins/Lifesteal/config.yml` as needed
+5. Configure `plugins/CGLifesteal/config.yml` as needed
 6. Restart again or use `/lifestealreload`
 
 ### Basic Commands
@@ -24,7 +24,7 @@ A comprehensive Lifesteal plugin for Minecraft 1.12.2 servers featuring hearts m
 ## 🎮 Features Overview
 
 ### 1. **Hearts System**
-- Players have dynamically managed hearts (0-20)
+- Players have dynamically managed hearts with configurable minimum and maximum values
 - Hearts are persistent across sessions
 - Default hearts: 10 (set on first join)
 - Hearts are tracked per player in `hearts.yml`
@@ -47,8 +47,7 @@ A comprehensive Lifesteal plugin for Minecraft 1.12.2 servers featuring hearts m
 - `/menu` - Opens the main hub GUI
 - Quick access to all plugin features:
   - **Daily Bundles** - Claim daily rewards
-  - **Warps** - Quick teleportation (placeholder for future)
-  - **Heart Shop** - Purchase hearts (placeholder for future)
+  - **Heart Shop** - Purchase hearts with PlayerPoints
   - **Lottery** - Try your luck
   - **Daily Rewards** - Claim money and points
   - **Teams** - Manage your team
@@ -212,11 +211,12 @@ lifesteal.admin - Admin permissions (default: op)
 ## ⚙️ Dependencies
 
 **Required:**
-- **Spigot/Bukkit 1.12.2** - Core server software
-- **PlayerPoints** - For points currency system (required for lottery/daily rewards)
-- **Vault** - For economy system (integrates with any economy plugin)
+- **Paper 26.3** - Core server software
+- **Java 25** - Server runtime
 
 **Optional:**
+- **PlayerPoints** - Points currency for the heart shop, lottery, and daily rewards
+- **Vault** - Economy integration for money features
 - **PlaceholderAPI** - For advanced chat placeholder integration
 
 ## 📦 Installation & Setup
@@ -232,13 +232,13 @@ lifesteal.admin - Admin permissions (default: op)
 
 2. **Install Dependencies**
    - Download and install:
-     - PlayerPoints (required)
-     - Vault (required)
+    - PlayerPoints (optional; enables points features)
+    - Vault and an economy provider (optional; enables money features)
      - PlaceholderAPI (optional but recommended)
    - Place these JARs in plugins/ folder and restart
 
 3. **Configure** (Optional)
-   - Edit `plugins/Lifesteal/config.yml` with your preferences
+  - Edit `plugins/CGLifesteal/config.yml` with your preferences
    - All settings have helpful comments explaining each option
    - Default values work for most servers
 
@@ -322,18 +322,18 @@ If you see warnings, check the Troubleshooting section below.
 - Install required plugins: PlayerPoints, Vault
 - Ensure plugins are in `plugins/` folder
 - Restart server completely (not just `/stop`, but full restart)
-- Check plugin versions are compatible with 1.12.2
+- Check that the server runs Paper 26.3 on Java 25
 
 **"PlayerPoints integration failed"**
 - Verify PlayerPoints is installed and enabled (`/plugins`)
-- Check PlayerPoints version (should be compatible with 1.12.2)
+- Check that PlayerPoints is installed if using points-based features
 - Look for red error messages in startup logs
 - If still failing, contact PlayerPoints support
 
 ### Runtime Issues
 
 **Hearts not saving**
-- Check file permissions on `plugins/Lifesteal/` folder
+- Check file permissions on `plugins/CGLifesteal/` folder
 - Ensure folder exists and is readable/writable
 - Verify disk space is available
 - Check console for permission errors
@@ -373,7 +373,7 @@ A: Data is stored in YAML format in the plugin folder. You may need to manually 
 ## 🔨 Building from Source
 
 ### Prerequisites
-- Java 8+ JDK
+- Java 25 JDK
 - Maven 3.6+
 
 ### Build Steps
@@ -406,7 +406,7 @@ hearts-lost-on-death: 1
 hearts-gained-on-kill: 1
 ```
 
-For detailed configuration, see comments in `plugins/Lifesteal/config.yml` after first run.
+For detailed configuration, see comments in `plugins/CGLifesteal/config.yml` after first run. GUI titles accept MiniMessage formatting; theme materials, button slots, heart bounds, and team limits can also be customized there.
 
 ## 💡 Tips & Tricks
 
@@ -418,17 +418,18 @@ For detailed configuration, see comments in `plugins/Lifesteal/config.yml` after
 
 ## 📊 Version Info
 
-- **Plugin Version**: 1.3.0
-- **Minecraft Version**: 1.12.2
-- **API**: Spigot/Bukkit
-- **Java**: 8+
-- **Dependencies**: Vault, PlayerPoints, PlaceholderAPI (optional)
+- **Plugin Version**: 1.5.0
+- **Minecraft Version**: Paper 26.3
+- **Java**: 25+
+- **Optional integrations**: Vault, PlayerPoints, PlaceholderAPI
 
 ## 📝 Changelog
 
-### v1.3.0 (Current)
-- 📦 Updated version to 1.3.0
-- 📝 Documentation improvements
+### v1.5.0 (Current)
+- Paper 26.3 and Java 25 support
+- Configurable GUI titles, themes, icons, and button slots
+- Updated layouts and functional main-menu heart-shop navigation
+- Configurable heart/team limits and persistent heart-item data
 
 ### v1.2.0
 
@@ -474,6 +475,6 @@ For issues or feature requests, review the console logs and troubleshooting sect
 
 ## 👥 Credits
 
-**Lifesteal Plugin v1.3.0** - Developed for Minecraft 1.12.2 servers
+**CGLifesteal v1.5.0** - Developed by Coolguy1353 for Paper 26.3
 
 **Enjoy your enhanced Lifesteal experience!**

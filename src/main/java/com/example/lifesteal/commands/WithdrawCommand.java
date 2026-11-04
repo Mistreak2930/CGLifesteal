@@ -1,13 +1,12 @@
 package com.example.lifesteal.commands;
 
 import com.example.lifesteal.LifestealPlugin;
-import org.bukkit.Material;
+import com.example.lifesteal.util.HeartItemUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +56,7 @@ public class WithdrawCommand implements CommandExecutor {
         }
 
         // Create heart item
-        ItemStack heartItem = createHeartItem(amount);
+        ItemStack heartItem = HeartItemUtil.createDepositHeartItem(plugin, amount);
         
         // Remove hearts from player
         plugin.getHeartManager().removeHearts(player, amount);
@@ -81,25 +80,5 @@ public class WithdrawCommand implements CommandExecutor {
         return true;
     }
 
-    private ItemStack createHeartItem(int amount) {
-        ItemStack item = new ItemStack(Material.REDSTONE_BLOCK, 1);
-        ItemMeta meta = item.getItemMeta();
-        
-        if (meta != null) {
-            meta.setDisplayName("§c❤ Heart Item x" + amount);
-            java.util.ArrayList<String> lore = new java.util.ArrayList<>();
-            lore.add("§aAmount: §e" + amount);
-            lore.add("§aRight-click or use /deposit to add");
-            meta.setLore(lore);
-            item.setItemMeta(meta);
-        }
-        
-        item.setAmount(1);
-
-        // Store amount in damage value (for 1.12.2 compatibility)
-        item.setDurability((short) Math.min(amount, Short.MAX_VALUE));
-        
-        return item;
-    }
 }
 

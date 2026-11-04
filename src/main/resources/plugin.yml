@@ -1,10 +1,10 @@
-name: Lifesteal
-version: 1.4.0
+name: CGLifesteal
+version: 1.5.0
 main: com.example.lifesteal.LifestealPlugin
-description: Advanced Lifesteal plugin with teams, heart shop, hearts management, lottery, daily rewards, and GUI
-authors: [Developer]
-depend: [PlayerPoints]
-softdepend: [Vault, PlaceholderAPI]
+api-version: '26.3'
+description: Modern Lifesteal plugin with teams, heart shop, lottery, daily rewards, and configurable GUIs
+authors: [Coolguy1353]
+softdepend: [PlayerPoints, Vault, PlaceholderAPI]
 
 commands:
   # Hearts Commands

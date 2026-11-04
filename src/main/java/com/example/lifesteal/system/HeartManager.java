@@ -2,6 +2,8 @@ package com.example.lifesteal.system;
 
 import com.example.lifesteal.LifestealPlugin;
 import org.bukkit.Bukkit;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -19,12 +21,16 @@ public class HeartManager {
     private File heartsFile;
     private FileConfiguration heartsConfig;
     private Map<UUID, Integer> heartsCache;
-    private static final int MAX_HEARTS = 20;
-    private static final int MIN_HEARTS = 0;
-    private static final int DEFAULT_HEARTS = 10;
+    private final int maxHearts;
+    private final int minHearts;
+    private final int defaultHearts;
 
     public HeartManager(JavaPlugin plugin) {
         this.plugin = plugin;
+        this.minHearts = Math.max(0, plugin.getConfig().getInt("settings.min-hearts", 0));
+        this.maxHearts = Math.max(minHearts + 1, plugin.getConfig().getInt("settings.max-hearts", 20));
+        this.defaultHearts = Math.max(minHearts,
+            Math.min(maxHearts, plugin.getConfig().getInt("settings.default-hearts", 10)));
         this.heartsCache = new HashMap<>();
         initializeHeartsFile();
         loadHearts();
@@ -50,8 +56,8 @@ public class HeartManager {
         Map<String, Integer> nameHearts = new HashMap<>();
         
         for (String key : heartsConfig.getKeys(false)) {
-            int hearts = heartsConfig.getInt(key, DEFAULT_HEARTS);
-            hearts = Math.max(MIN_HEARTS, Math.min(MAX_HEARTS, hearts));
+            int hearts = heartsConfig.getInt(key, defaultHearts);
+            hearts = Math.max(minHearts, Math.min(maxHearts, hearts));
             
             try {
                 // Try to parse as UUID (for backwards compatibility)
@@ -100,7 +106,7 @@ public class HeartManager {
     }
 
     public int getHearts(UUID uuid) {
-        return heartsCache.getOrDefault(uuid, DEFAULT_HEARTS);
+        return heartsCache.getOrDefault(uuid, defaultHearts);
     }
 
     public int getHearts(Player player) {
@@ -108,7 +114,7 @@ public class HeartManager {
     }
 
     public void setHearts(UUID uuid, int hearts) {
-        int clamped = Math.max(MIN_HEARTS, Math.min(MAX_HEARTS, hearts));
+        int clamped = Math.max(minHearts, Math.min(maxHearts, hearts));
         heartsCache.put(uuid, clamped);
         
         plugin.getLogger().info("Set hearts for " + uuid + " to " + clamped);
@@ -137,7 +143,7 @@ public class HeartManager {
         plugin.getLogger().info("Removed " + amount + " hearts from " + uuid + ". New: " + newAmount);
         
         // Check if player ran out of hearts and ban them
-        if (newAmount <= 0) {
+        if (newAmount <= 0 && plugin.getConfig().getBoolean("settings.ban-on-zero-hearts", true)) {
             Player player = Bukkit.getPlayer(uuid);
             LifestealPlugin lifestealPlugin = LifestealPlugin.getInstance();
             if (player != null) {
@@ -194,14 +200,19 @@ public class HeartManager {
 
             if (adjustMax) {
                 // Update player's max health, then current health
-                player.setMaxHealth(calculatedHealth);
+                AttributeInstance maxHealth = player.getAttribute(Attribute.MAX_HEALTH);
+                if (maxHealth == null) {
+                    return;
+                }
+                maxHealth.setBaseValue(calculatedHealth);
                 if (player.getHealth() > calculatedHealth) {
                     player.setHealth(calculatedHealth);
                 }
                 plugin.getLogger().info("Updated " + player.getName() + " maxHealth to " + calculatedHealth + " (" + hearts + " hearts)");
             } else {
                 // Only set current health without changing maxHealth
-                double setHealth = Math.min(player.getMaxHealth(), calculatedHealth);
+                AttributeInstance maxHealth = player.getAttribute(Attribute.MAX_HEALTH);
+                double setHealth = Math.min(maxHealth == null ? 20.0 : maxHealth.getValue(), calculatedHealth);
                 if (setHealth <= 0) setHealth = 0.5; // avoid invalid values
                 player.setHealth(setHealth);
                 plugin.getLogger().info("Updated " + player.getName() + " health to " + setHealth + " (" + hearts + " hearts) without changing maxHealth");
@@ -228,15 +239,15 @@ public class HeartManager {
     }
 
     public int getMaxHearts() {
-        return MAX_HEARTS;
+        return maxHearts;
     }
 
     public int getMinHearts() {
-        return MIN_HEARTS;
+        return minHearts;
     }
 
     public int getDefaultHearts() {
-        return DEFAULT_HEARTS;
+        return defaultHearts;
     }
 
     public void resetAllHearts(int heartsAmount) {

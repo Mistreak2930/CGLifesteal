@@ -17,6 +17,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
 /**
  * Main plugin class for Lifesteal system
  * Manages initialization, command registration, and event listeners
@@ -45,6 +49,7 @@ public class LifestealPlugin extends JavaPlugin {
         
         // Load configuration
         long startTime = System.currentTimeMillis();
+        migrateLegacyDataFolder();
         saveDefaultConfig();
         getLogger().info("✓ Configuration loaded");
         
@@ -77,7 +82,7 @@ public class LifestealPlugin extends JavaPlugin {
             this.dailyRewardManager = new DailyRewardManager(this);
             getLogger().info("✓ Lottery & Daily Reward systems initialized");
         } else {
-            getLogger().warning("✗ PlayerPoints not found - Lottery/Rewards disabled (required plugin)");
+            getLogger().warning("✗ PlayerPoints not found - points-based features are disabled (optional plugin)");
             this.lotteryManager = null;
             this.dailyRewardManager = null;
         }
@@ -105,6 +110,21 @@ public class LifestealPlugin extends JavaPlugin {
         getLogger().info("  • Load time: " + loadTime + "ms");
         getLogger().info("  • Status: Ready for play");
         getLogger().info("════════════════════════════════════════════════════════");
+    }
+
+    private void migrateLegacyDataFolder() {
+        File currentFolder = getDataFolder();
+        File legacyFolder = new File(currentFolder.getParentFile(), "Lifesteal");
+        if (currentFolder.exists() || !legacyFolder.isDirectory()) {
+            return;
+        }
+
+        try {
+            Files.move(legacyFolder.toPath(), currentFolder.toPath());
+            getLogger().info("Migrated plugin data from Lifesteal to CGLifesteal.");
+        } catch (IOException exception) {
+            getLogger().severe("Could not migrate the existing Lifesteal data folder: " + exception.getMessage());
+        }
     }
 
     @Override

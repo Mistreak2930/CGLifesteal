@@ -5,6 +5,25 @@ All notable changes to the Lifesteal plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-11-04
+
+### Added
+- Added MiniMessage-configurable titles, theme materials, and button slots for plugin GUIs.
+- Added configurable main-menu icons and a compact five-row menu layout.
+- Added persistent item data for withdrawn hearts so amounts no longer rely on item durability.
+
+### Changed
+- Updated the server API target to Paper 26.3 and the runtime/compiler baseline to Java 25.
+- Renamed the plugin to CGLifesteal and updated the author to Coolguy1353.
+- Updated all GUIs to current Minecraft materials and semantic inventory holders.
+- Connected the main-menu Heart Shop button to the functional shop GUI.
+- Applied configured heart limits, team limits, and zero-heart ban behavior at runtime.
+- Made PlayerPoints an optional integration; features that require it remain unavailable without it.
+
+### Fixed
+- Fixed custom GUI titles breaking inventory click handling.
+- Fixed documented heart and team configuration values being ignored.
+
 ## [1.4.0] - 2026-04-23
 
 ### Added

@@ -372,8 +372,8 @@ public class BundleManager {
         public Material getDisplayMaterial() {
             switch (type) {
                 case "MONEY": return Material.GOLD_INGOT;
-                case "POINTS": return Material.EXP_BOTTLE;
-                case "HEARTS": return Material.INK_SACK; // Will need durability for red
+                case "POINTS": return Material.EXPERIENCE_BOTTLE;
+                case "HEARTS": return Material.RED_DYE;
                 case "ORBITS": return Material.ENDER_PEARL;
                 case "ITEM_DIAMOND": return Material.DIAMOND;
                 case "ITEM_EMERALD": return Material.EMERALD;

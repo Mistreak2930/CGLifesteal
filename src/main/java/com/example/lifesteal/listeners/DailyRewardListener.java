@@ -2,6 +2,7 @@ package com.example.lifesteal.listeners;
 
 import com.example.lifesteal.LifestealPlugin;
 import com.example.lifesteal.gui.DailyRewardGUI;
+import com.example.lifesteal.gui.GuiUtil;
 import com.example.lifesteal.system.DailyRewardManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,7 +21,7 @@ public class DailyRewardListener implements Listener {
     
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().contains("Daily Rewards")) {
+        if (!GuiUtil.isGui(event.getView().getTopInventory(), "daily-rewards")) {
             return;
         }
         
@@ -32,9 +33,11 @@ public class DailyRewardListener implements Listener {
         
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
+        if (slot < 0 || slot >= event.getView().getTopInventory().getSize()) {
+            return;
+        }
         
-        // Slot 13 = Claim button
-        if (slot == 13) {
+        if (slot == GuiUtil.slot(plugin, "daily-rewards", "claim", 13, 27)) {
             dailyRewardManager.claimReward(player);
             // Refresh GUI
             new DailyRewardGUI(plugin, dailyRewardManager, player).open();

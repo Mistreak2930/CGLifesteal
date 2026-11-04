@@ -2,6 +2,7 @@ package com.example.lifesteal.listeners;
 
 import com.example.lifesteal.LifestealPlugin;
 import com.example.lifesteal.gui.HeartShopGUI;
+import com.example.lifesteal.gui.GuiUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,7 +20,7 @@ public class HeartShopListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().contains("Heart Emporium")) {
+        if (!GuiUtil.isGui(event.getView().getTopInventory(), "heartshop")) {
             return;
         }
 
@@ -31,6 +32,9 @@ public class HeartShopListener implements Listener {
 
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
+        if (slot < 0 || slot >= event.getView().getTopInventory().getSize()) {
+            return;
+        }
 
         // Get prices from config
         int price1Heart = plugin.getConfig().getInt("heartshop.prices.1-heart", 1000);
@@ -38,13 +42,13 @@ public class HeartShopListener implements Listener {
         int price10Hearts = plugin.getConfig().getInt("heartshop.prices.10-hearts", 8000);
 
         // Handle purchases
-        if (slot == 19) { // 1 Heart
+        if (slot == GuiUtil.slot(plugin, "heartshop", "one-heart", 19, 54)) {
             purchaseHearts(player, 1, price1Heart);
-        } else if (slot == 22) { // 5 Hearts
+        } else if (slot == GuiUtil.slot(plugin, "heartshop", "five-hearts", 22, 54)) {
             purchaseHearts(player, 5, price5Hearts);
-        } else if (slot == 25) { // 10 Hearts
+        } else if (slot == GuiUtil.slot(plugin, "heartshop", "ten-hearts", 25, 54)) {
             purchaseHearts(player, 10, price10Hearts);
-        } else if (slot == 49) { // Close button
+        } else if (slot == GuiUtil.slot(plugin, "heartshop", "close", 49, 54)) {
             player.closeInventory();
             player.sendMessage(plugin.getMessageManager().getMessage("shop.closed"));
         }

@@ -40,6 +40,10 @@ death:
 # --- HEART ITEM SETTINGS ---
 # Configure the physical heart items from /withdraw
 hearts:
+  # Item used when a player withdraws hearts into an inventory item
+  withdraw:
+    material: REDSTONE_BLOCK
+
   item:
     # Material used for heart items (valid Minecraft material)
     material: RED_DYE
@@ -175,6 +179,78 @@ bundles:
 
 # --- GUI SETTINGS ---
 gui:
+  # Inventory titles support MiniMessage tags, for example: <dark_red><bold>Hearts</bold></dark_red>
+  titles:
+    menu: "<dark_red><bold>CGLifesteal</bold></dark_red>"
+    bundles: "<light_purple><bold>Daily Bundles</bold></light_purple>"
+    bundle-rewards: "<light_purple><bold>Bundle Rewards</bold></light_purple>"
+    heartshop: "<red><bold>Heart Shop</bold></red>"
+    daily-rewards: "<gold><bold>Daily Rewards</bold></gold>"
+    lottery: "<gold><bold>Lottery</bold></gold>"
+    team-main: "<gold>Team: {team}</gold>"
+    team-members: "<gold>Team Members ({count})</gold>"
+
+  # Use valid item material names. Invalid values fall back to the defaults.
+  theme:
+    background: BLACK_STAINED_GLASS_PANE
+    accent: RED_STAINED_GLASS_PANE
+    secondary: GRAY_STAINED_GLASS_PANE
+
+  # Optional icon overrides for the main menu. Any valid item material is accepted.
+  materials:
+    menu:
+      bundles: CHEST
+      heartshop: RED_DYE
+      lottery: EMERALD
+      daily-rewards-ready: LIME_DYE
+      daily-rewards-claimed: GRAY_DYE
+      teams: PLAYER_HEAD
+      stats: BOOK
+      close: BARRIER
+
+  # Slot numbers are zero-based. Keep each slot within its inventory.
+  slots:
+    menu:
+      bundles: 20
+      heartshop: 22
+      lottery: 24
+      daily-rewards: 29
+      teams: 31
+      stats: 33
+      close: 40
+    bundles:
+      bundle-1: 20
+      bundle-2: 22
+      bundle-3: 24
+      info: 31
+      preview: 40
+      back: 48
+      close: 49
+    bundle-rewards:
+      next-reward: 13
+      open: 40
+      back: 48
+      close: 49
+    heartshop:
+      one-heart: 19
+      five-hearts: 22
+      ten-hearts: 25
+      close: 49
+    daily-rewards:
+      claim: 13
+    lottery:
+      pool: 11
+      buy: 13
+    team-main:
+      info: 0
+      members: 1
+      invite: 2
+      chat: 3
+      leave: 4
+      delete: 5
+    team-members:
+      back: 26
+
   team:
     # Enable/disable team GUI
     enabled: true

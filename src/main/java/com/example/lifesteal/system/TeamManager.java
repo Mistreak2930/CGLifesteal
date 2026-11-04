@@ -17,11 +17,17 @@ public class TeamManager {
     private FileConfiguration teamsConfig;
     private Map<String, Team> teamsCache;
     private Map<UUID, String> playerTeamMap; // UUID -> Team Name
-    private static final int MAX_TEAM_SIZE = 10;
-    private static final int MAX_TEAM_NAME_LENGTH = 16;
+    private final int maxTeamSize;
+    private final int minTeamNameLength;
+    private final int maxTeamNameLength;
 
     public TeamManager(JavaPlugin plugin) {
         this.plugin = plugin;
+        this.minTeamNameLength = Math.max(1, plugin.getConfig().getInt("teams.min-team-name-length", 3));
+        this.maxTeamNameLength = Math.max(minTeamNameLength,
+            plugin.getConfig().getInt("teams.max-team-name-length", 16));
+        this.maxTeamSize = Math.max(1, plugin.getConfig().getInt("teams.max-team-size",
+            plugin.getConfig().getInt("settings.max-team-size", 10)));
         this.teamsCache = new HashMap<>();
         this.playerTeamMap = new HashMap<>();
         initializeTeamsFile();
@@ -121,7 +127,7 @@ public class TeamManager {
         if (getTeam(teamName) != null) {
             return false; // Team already exists
         }
-        if (teamName.length() > MAX_TEAM_NAME_LENGTH || teamName.length() < 3) {
+        if (teamName.length() > maxTeamNameLength || teamName.length() < minTeamNameLength) {
             return false; // Invalid team name length
         }
         if (playerTeamMap.containsKey(leader.getUniqueId())) {
@@ -158,7 +164,7 @@ public class TeamManager {
         if (!team.getLeader().equals(inviter.getUniqueId()) && !team.isMember(inviter.getUniqueId())) {
             return false; // Only team members can invite
         }
-        if (team.getMembers().size() >= MAX_TEAM_SIZE) {
+        if (team.getMembers().size() >= maxTeamSize) {
             return false; // Team is full
         }
         if (playerTeamMap.containsKey(target.getUniqueId())) {
@@ -225,7 +231,7 @@ public class TeamManager {
     }
 
     public int getMaxTeamSize() {
-        return MAX_TEAM_SIZE;
+        return maxTeamSize;
     }
 
     // Inner Team class

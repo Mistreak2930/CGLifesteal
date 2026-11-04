@@ -25,34 +25,34 @@ public class LotteryGUI {
     }
     
     public void open() {
-        Inventory inventory = Bukkit.createInventory(null, 27, "§6§l★ Lottery System ★");
+        Inventory inventory = GuiUtil.createInventory(plugin, "lottery", 27, "<gold><bold>Lottery</bold></gold>");
         
         // Background
-        ItemStack background = createPane((short) 15, " ");
+        ItemStack background = createPane(GuiUtil.material(plugin, "gui.theme.background", Material.BLACK_STAINED_GLASS_PANE), " ");
         for (int i = 0; i < 27; i++) {
             inventory.setItem(i, background);
         }
         
         // Top border
-        ItemStack topBorder = createPane((short) 14, " ");
+        ItemStack topBorder = createPane(GuiUtil.material(plugin, "gui.theme.accent", Material.RED_STAINED_GLASS_PANE), " ");
         for (int i = 0; i < 9; i++) {
             inventory.setItem(i, topBorder);
         }
         
         // Bottom border  
-        ItemStack bottomBorder = createPane((short) 1, " ");
+        ItemStack bottomBorder = createPane(GuiUtil.material(plugin, "gui.theme.secondary", Material.GRAY_STAINED_GLASS_PANE), " ");
         for (int i = 18; i < 27; i++) {
             inventory.setItem(i, bottomBorder);
         }
         
         // Left border
         for (int i = 9; i < 18; i += 9) {
-            inventory.setItem(i, createPane((short) 7, " "));
+            inventory.setItem(i, createPane(GuiUtil.material(plugin, "gui.theme.secondary", Material.GRAY_STAINED_GLASS_PANE), " "));
         }
         
         // Right border
         for (int i = 17; i < 18; i += 9) {
-            inventory.setItem(i, createPane((short) 7, " "));
+            inventory.setItem(i, createPane(GuiUtil.material(plugin, "gui.theme.secondary", Material.GRAY_STAINED_GLASS_PANE), " "));
         }
         
         // Title and Info
@@ -61,11 +61,11 @@ public class LotteryGUI {
         
         // Pool amount display
         ItemStack poolDisplay = createPoolDisplay();
-        inventory.setItem(11, poolDisplay);
+        inventory.setItem(GuiUtil.slot(plugin, "lottery", "pool", 11, 27), poolDisplay);
         
         // Buy ticket button
         ItemStack buyTicket = createBuyTicketButton();
-        inventory.setItem(13, buyTicket);
+        inventory.setItem(GuiUtil.slot(plugin, "lottery", "buy", 13, 27), buyTicket);
         
         // Ticket info
         ItemStack ticketInfo = createTicketInfoButton();
@@ -202,8 +202,8 @@ public class LotteryGUI {
         return item;
     }
     
-    private ItemStack createPane(short data, String name) {
-        ItemStack pane = new ItemStack(Material.STAINED_GLASS_PANE, 1, data);
+    private ItemStack createPane(Material material, String name) {
+        ItemStack pane = new ItemStack(material);
         ItemMeta meta = pane.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(name);

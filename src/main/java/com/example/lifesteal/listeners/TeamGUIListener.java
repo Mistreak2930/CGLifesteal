@@ -2,6 +2,7 @@ package com.example.lifesteal.listeners;
 
 import com.example.lifesteal.LifestealPlugin;
 import com.example.lifesteal.gui.TeamGUI;
+import com.example.lifesteal.gui.GuiUtil;
 import com.example.lifesteal.system.TeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -31,30 +32,25 @@ public class TeamGUIListener implements Listener {
         }
 
         Player player = (Player) event.getWhoClicked();
-        String inventoryTitle = event.getInventory().getName();
-
-        // Check if this is a team GUI inventory
-        if (!inventoryTitle.startsWith("§6Team:") && !inventoryTitle.startsWith("§6Team Members")) {
+        boolean mainGui = GuiUtil.isGui(event.getView().getTopInventory(), "team-main");
+        boolean membersGui = GuiUtil.isGui(event.getView().getTopInventory(), "team-members");
+        if (!mainGui && !membersGui) {
             return;
         }
 
         event.setCancelled(true);
 
         int slot = event.getRawSlot();
-        if (slot < 0 || slot >= event.getInventory().getSize()) {
+        if (slot < 0 || slot >= event.getView().getTopInventory().getSize()) {
             return;
         }
 
-        // Handle main team GUI
-        if (inventoryTitle.startsWith("§6Team:")) {
-            handleMainTeamGUI(player, slot, inventoryTitle);
+        if (mainGui) {
+            handleMainTeamGUI(player, slot, event.getView().getTopInventory().getSize());
             return;
         }
 
-        // Handle members GUI
-        if (inventoryTitle.startsWith("§6Team Members")) {
-            handleMembersGUI(player, slot);
-        }
+        handleMembersGUI(player, slot);
     }
 
     /**
@@ -63,7 +59,7 @@ public class TeamGUIListener implements Listener {
      * @param slot the clicked slot
      * @param inventoryTitle the inventory title
      */
-    private void handleMainTeamGUI(Player player, int slot, String inventoryTitle) {
+    private void handleMainTeamGUI(Player player, int slot, int inventorySize) {
         TeamManager.Team team = teamManager.getPlayerTeam(player);
 
         if (team == null) {
@@ -72,37 +68,23 @@ public class TeamGUIListener implements Listener {
             return;
         }
 
-        switch (slot) {
-            case 0:
-                // Team Info button
-                openTeamInfo(player, team);
-                break;
-            case 1:
-                // View Members button
-                teamGUI.openMembersGUI(player);
-                break;
-            case 2:
-                // Invite Player button
-                player.closeInventory();
-                player.sendMessage("§6[Team] §aType the player name in chat to invite:");
-                // Store invitation state (simplified - could use a tracker class)
-                break;
-            case 3:
-                // Team Chat Toggle button
-                toggleTeamChat(player);
-                break;
-            case 4:
-                // Leave Team button
-                handleLeaveTeam(player, team);
-                break;
-            case 5:
-                // Delete Team button (owner only)
-                if (team.getLeader().equals(player.getUniqueId())) {
-                    handleDeleteTeam(player, team);
-                } else {
-                    player.sendMessage("§c[Team] §cOnly the owner can delete the team!");
-                }
-                break;
+        if (slot == GuiUtil.slot(plugin, "team-main", "info", 0, inventorySize)) {
+            openTeamInfo(player, team);
+        } else if (slot == GuiUtil.slot(plugin, "team-main", "members", 1, inventorySize)) {
+            teamGUI.openMembersGUI(player);
+        } else if (slot == GuiUtil.slot(plugin, "team-main", "invite", 2, inventorySize)) {
+            player.closeInventory();
+            player.sendMessage("§6[Team] §aType the player name in chat to invite:");
+        } else if (slot == GuiUtil.slot(plugin, "team-main", "chat", 3, inventorySize)) {
+            toggleTeamChat(player);
+        } else if (slot == GuiUtil.slot(plugin, "team-main", "leave", 4, inventorySize)) {
+            handleLeaveTeam(player, team);
+        } else if (slot == GuiUtil.slot(plugin, "team-main", "delete", 5, inventorySize)) {
+            if (team.getLeader().equals(player.getUniqueId())) {
+                handleDeleteTeam(player, team);
+            } else {
+                player.sendMessage("§c[Team] §cOnly the owner can delete the team!");
+            }
         }
     }
 
@@ -115,7 +97,7 @@ public class TeamGUIListener implements Listener {
         int inventorySize = player.getOpenInventory().getTopInventory().getSize();
 
         // Back button is at the last slot
-        if (slot == inventorySize - 1) {
+        if (slot == GuiUtil.slot(plugin, "team-members", "back", inventorySize - 1, inventorySize)) {
             teamGUI.openTeamGUI(player);
             return;
         }

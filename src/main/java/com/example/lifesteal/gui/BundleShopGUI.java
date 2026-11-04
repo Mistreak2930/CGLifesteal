@@ -30,18 +30,16 @@ public class BundleShopGUI {
     }
     
     public void open() {
-        Inventory inventory = Bukkit.createInventory(null, 54, "§d§l✦ Daily Bundles ✦");
+        Inventory inventory = GuiUtil.createInventory(plugin, "bundles", 54, "<light_purple><bold>Daily Bundles</bold></light_purple>");
         
         // Fill background
-        ItemStack background = createPane(Material.STAINED_GLASS_PANE, " ");
-        background.setDurability((short) 15); // Black
+        ItemStack background = createPane(GuiUtil.material(plugin, "gui.theme.background", Material.BLACK_STAINED_GLASS_PANE), " ");
         for (int i = 0; i < 54; i++) {
             inventory.setItem(i, background);
         }
         
         // Create decorative border
-        ItemStack borderPane = createPane(Material.STAINED_GLASS_PANE, "§d§l▬");
-        borderPane.setDurability((short) 10); // Purple
+        ItemStack borderPane = createPane(GuiUtil.material(plugin, "gui.theme.accent", Material.RED_STAINED_GLASS_PANE), " ");
         for (int i = 0; i < 9; i++) {
             inventory.setItem(i, borderPane);
             inventory.setItem(i + 45, borderPane);
@@ -64,7 +62,11 @@ public class BundleShopGUI {
         long timeUntilRefresh = bundleManager.getTimeUntilRewardRefresh(player);
         
         // Bundle slots: 20, 22, 24
-        int[] bundleSlots = {20, 22, 24};
+        int[] bundleSlots = {
+            GuiUtil.slot(plugin, "bundles", "bundle-1", 20, 54),
+            GuiUtil.slot(plugin, "bundles", "bundle-2", 22, 54),
+            GuiUtil.slot(plugin, "bundles", "bundle-3", 24, 54)
+        };
         
         for (int i = 0; i < 3; i++) {
             ItemStack bundle;
@@ -90,7 +92,7 @@ public class BundleShopGUI {
             "",
             "§7Next reward refresh:",
             "§e" + formatTime(timeUntilRefresh));
-        inventory.setItem(31, info);
+        inventory.setItem(GuiUtil.slot(plugin, "bundles", "info", 31, 54), info);
         
         // Current reward preview (slot 40)
         BundleReward currentReward = bundleManager.getCurrentReward(player);
@@ -101,17 +103,17 @@ public class BundleShopGUI {
             "§e" + currentReward.getDisplayName(),
             "",
             "§7Refreshes: §e" + formatTime(timeUntilRefresh));
-        inventory.setItem(40, rewardPreview);
+        inventory.setItem(GuiUtil.slot(plugin, "bundles", "preview", 40, 54), rewardPreview);
         
         // Back button (slot 48)
         ItemStack back = createItem(Material.ARROW, "§e§lBack", 
             "§7Return to main menu");
-        inventory.setItem(48, back);
+        inventory.setItem(GuiUtil.slot(plugin, "bundles", "back", 48, 54), back);
         
         // Close button (slot 49)
         ItemStack close = createItem(Material.BARRIER, "§c§lClose", 
             "§7Click to close");
-        inventory.setItem(49, close);
+        inventory.setItem(GuiUtil.slot(plugin, "bundles", "close", 49, 54), close);
         
         player.openInventory(inventory);
     }
@@ -120,18 +122,16 @@ public class BundleShopGUI {
      * Open the bundle detail GUI showing all rewards
      */
     public void openBundleDetail() {
-        Inventory inventory = Bukkit.createInventory(null, 54, "§d§l✦ Bundle Rewards ✦");
+        Inventory inventory = GuiUtil.createInventory(plugin, "bundle-rewards", 54, "<light_purple><bold>Bundle Rewards</bold></light_purple>");
         
         // Fill background
-        ItemStack background = createPane(Material.STAINED_GLASS_PANE, " ");
-        background.setDurability((short) 15); // Black
+        ItemStack background = createPane(GuiUtil.material(plugin, "gui.theme.background", Material.BLACK_STAINED_GLASS_PANE), " ");
         for (int i = 0; i < 54; i++) {
             inventory.setItem(i, background);
         }
         
         // Create decorative border
-        ItemStack borderPane = createPane(Material.STAINED_GLASS_PANE, "§a§l▬");
-        borderPane.setDurability((short) 5); // Lime
+        ItemStack borderPane = createPane(GuiUtil.material(plugin, "gui.theme.secondary", Material.LIME_STAINED_GLASS_PANE), " ");
         for (int i = 0; i < 9; i++) {
             inventory.setItem(i, borderPane);
             inventory.setItem(i + 45, borderPane);
@@ -159,7 +159,7 @@ public class BundleShopGUI {
             "§7Refreshes: §e" + formatTime(timeUntilRefresh),
             "",
             "§a§l» Click to claim bundle!");
-        inventory.setItem(13, nextReward);
+        inventory.setItem(GuiUtil.slot(plugin, "bundle-rewards", "next-reward", 13, 54), nextReward);
         
         // All possible rewards
         List<BundleReward> allRewards = bundleManager.getAllPossibleRewards();
@@ -180,30 +180,28 @@ public class BundleShopGUI {
         ItemStack openBundle;
         
         if (availableBundles > 0) {
-            openBundle = createItem(Material.INK_SACK, "§a§l✔ Open Bundle", 
+            openBundle = createItem(Material.LIME_DYE, "§a§l✔ Open Bundle",
                 "§7Click to open a bundle!",
                 "",
                 "§aYou have §e" + availableBundles + "§a bundle(s) available");
-            openBundle.setDurability((short) 10); // Lime dye
         } else {
             long timeUntilReset = bundleManager.getTimeUntilReset(player);
-            openBundle = createItem(Material.INK_SACK, "§c§l✖ No Bundles Available", 
+            openBundle = createItem(Material.RED_DYE, "§c§l✖ No Bundles Available",
                 "§7You don't have any bundles!",
                 "",
                 "§7Next reset: §e" + formatTime(timeUntilReset));
-            openBundle.setDurability((short) 1); // Red dye
         }
-        inventory.setItem(40, openBundle);
+        inventory.setItem(GuiUtil.slot(plugin, "bundle-rewards", "open", 40, 54), openBundle);
         
         // Back button (slot 48)
         ItemStack back = createItem(Material.ARROW, "§e§lBack", 
             "§7Return to bundle shop");
-        inventory.setItem(48, back);
+        inventory.setItem(GuiUtil.slot(plugin, "bundle-rewards", "back", 48, 54), back);
         
         // Close button (slot 49)
         ItemStack close = createItem(Material.BARRIER, "§c§lClose", 
             "§7Click to close");
-        inventory.setItem(49, close);
+        inventory.setItem(GuiUtil.slot(plugin, "bundle-rewards", "close", 49, 54), close);
         
         player.openInventory(inventory);
     }
@@ -226,13 +224,12 @@ public class BundleShopGUI {
     private ItemStack createClaimedBundle(int bundleNumber) {
         long timeUntilReset = bundleManager.getTimeUntilReset(player);
         
-        ItemStack item = createItem(Material.INK_SACK, "§7§lBundle #" + bundleNumber, 
+        ItemStack item = createItem(Material.GRAY_DYE, "§7§lBundle #" + bundleNumber,
             "§7This bundle has been claimed",
             "",
             "§c✖ Already claimed",
             "",
             "§7Next reset: §e" + formatTime(timeUntilReset));
-        item.setDurability((short) 8); // Gray dye
         return item;
     }
     

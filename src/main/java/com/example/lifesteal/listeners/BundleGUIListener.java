@@ -3,6 +3,8 @@ package com.example.lifesteal.listeners;
 import com.example.lifesteal.LifestealPlugin;
 import com.example.lifesteal.gui.BundleShopGUI;
 import com.example.lifesteal.gui.DailyRewardGUI;
+import com.example.lifesteal.gui.GuiUtil;
+import com.example.lifesteal.gui.HeartShopGUI;
 import com.example.lifesteal.gui.LotteryGUI;
 import com.example.lifesteal.gui.MenuGUI;
 import com.example.lifesteal.gui.TeamGUI;
@@ -27,12 +29,14 @@ public class BundleGUIListener implements Listener {
     
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        String title = event.getView().getTitle();
-        
-        // Check if it's one of our custom GUIs
-        if (!title.contains("Main Menu") && 
-            !title.contains("Daily Bundles") && 
-            !title.contains("Bundle Rewards")) {
+        String guiId;
+        if (GuiUtil.isGui(event.getView().getTopInventory(), "menu")) {
+            guiId = "menu";
+        } else if (GuiUtil.isGui(event.getView().getTopInventory(), "bundles")) {
+            guiId = "bundles";
+        } else if (GuiUtil.isGui(event.getView().getTopInventory(), "bundle-rewards")) {
+            guiId = "bundle-rewards";
+        } else {
             return;
         }
         
@@ -44,17 +48,15 @@ public class BundleGUIListener implements Listener {
         
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
+        if (slot < 0 || slot >= event.getView().getTopInventory().getSize()) {
+            return;
+        }
         
-        // Handle Main Menu clicks
-        if (title.contains("Main Menu")) {
+        if (guiId.equals("menu")) {
             handleMainMenuClick(player, slot);
-        }
-        // Handle Daily Bundles clicks
-        else if (title.contains("Daily Bundles") && !title.contains("Bundle Rewards")) {
+        } else if (guiId.equals("bundles")) {
             handleBundleShopClick(player, slot);
-        }
-        // Handle Bundle Rewards (detail) clicks
-        else if (title.contains("Bundle Rewards")) {
+        } else {
             handleBundleDetailClick(player, slot);
         }
     }
@@ -63,50 +65,36 @@ public class BundleGUIListener implements Listener {
      * Handle clicks in the Main Menu GUI
      */
     private void handleMainMenuClick(Player player, int slot) {
-        switch (slot) {
-            case 20: // Bundles Shop
+        if (slot == GuiUtil.slot(plugin, "menu", "bundles", 20, 45)) {
+            player.closeInventory();
+            new BundleShopGUI(plugin, player).open();
+            player.sendMessage("§8[§dBundles§8] §eOpening bundle shop...");
+        } else if (slot == GuiUtil.slot(plugin, "menu", "heartshop", 22, 45)) {
+            if (plugin.getConfig().getBoolean("heartshop.enabled", true) && plugin.hasPlayerPoints()) {
                 player.closeInventory();
-                new BundleShopGUI(plugin, player).open();
-                player.sendMessage("§8[§dBundles§8] §eOpening bundle shop...");
-                break;
-                
-            case 22: // Warps
-                player.sendMessage("§8[§bWarps§8] §cWarps feature coming soon!");
-                break;
-                
-            case 24: // Heart Shop
-                player.sendMessage("§8[§cHeart Shop§8] §cHeart shop feature coming soon!");
-                break;
-                
-            case 29: // Lottery
-                if (plugin.hasLotteryManager()) {
-                    player.closeInventory();
-                    new LotteryGUI(plugin, plugin.getLotteryManager(), player).open();
-                    player.sendMessage("§8[§aLottery§8] §eOpening lottery...");
-                } else {
-                    player.sendMessage("§8[§cLifesteal§8] §cLottery system not available!");
-                }
-                break;
-                
-            case 31: // Daily Rewards
-                if (plugin.hasDailyRewardManager()) {
-                    player.closeInventory();
-                    new DailyRewardGUI(plugin, plugin.getDailyRewardManager(), player).open();
-                    player.sendMessage("§8[§6Daily Rewards§8] §eOpening daily rewards...");
-                } else {
-                    player.sendMessage("§8[§cLifesteal§8] §cDaily rewards system not available!");
-                }
-                break;
-                
-            case 33: // Teams
+                new HeartShopGUI(plugin, player).open();
+            } else {
+                player.sendMessage(plugin.getMessageManager().getMessage("shop.disabled"));
+            }
+        } else if (slot == GuiUtil.slot(plugin, "menu", "lottery", 24, 45)) {
+            if (plugin.hasLotteryManager()) {
                 player.closeInventory();
-                new TeamGUI(plugin).openTeamGUI(player);
-                player.sendMessage("§8[§eTeams§8] §eOpening team GUI...");
-                break;
-                
-            case 49: // Close
+                new LotteryGUI(plugin, plugin.getLotteryManager(), player).open();
+            } else {
+                player.sendMessage("§8[§cCGLifesteal§8] §cLottery system not available!");
+            }
+        } else if (slot == GuiUtil.slot(plugin, "menu", "daily-rewards", 29, 45)) {
+            if (plugin.hasDailyRewardManager()) {
                 player.closeInventory();
-                break;
+                new DailyRewardGUI(plugin, plugin.getDailyRewardManager(), player).open();
+            } else {
+                player.sendMessage("§8[§cCGLifesteal§8] §cDaily rewards system not available!");
+            }
+        } else if (slot == GuiUtil.slot(plugin, "menu", "teams", 31, 45)) {
+            player.closeInventory();
+            new TeamGUI(plugin).openTeamGUI(player);
+        } else if (slot == GuiUtil.slot(plugin, "menu", "close", 40, 45)) {
+            player.closeInventory();
         }
     }
     
@@ -114,33 +102,33 @@ public class BundleGUIListener implements Listener {
      * Handle clicks in the Bundle Shop GUI
      */
     private void handleBundleShopClick(Player player, int slot) {
-        switch (slot) {
-            case 20: // Bundle #1
-            case 22: // Bundle #2
-            case 24: // Bundle #3
-                int bundleNumber = (slot == 20) ? 1 : (slot == 22) ? 2 : 3;
+        int[] bundleSlots = {
+            GuiUtil.slot(plugin, "bundles", "bundle-1", 20, 54),
+            GuiUtil.slot(plugin, "bundles", "bundle-2", 22, 54),
+            GuiUtil.slot(plugin, "bundles", "bundle-3", 24, 54)
+        };
+        for (int i = 0; i < bundleSlots.length; i++) {
+            if (slot == bundleSlots[i]) {
+                int bundleNumber = i + 1;
                 int availableBundles = bundleManager.getAvailableBundles(player);
-                
                 if (bundleNumber <= availableBundles) {
-                    // Open bundle detail view
                     player.closeInventory();
                     new BundleShopGUI(plugin, player).openBundleDetail();
                     player.sendMessage("§8[§dBundles§8] §eViewing bundle contents...");
                 } else {
                     player.sendMessage("§8[§dBundles§8] §cThis bundle has already been claimed!");
-                    long timeUntil = bundleManager.getTimeUntilReset(player);
-                    player.sendMessage("§8[§dBundles§8] §7Next reset in: §e" + formatTime(timeUntil));
+                    player.sendMessage("§8[§dBundles§8] §7Next reset in: §e"
+                        + formatTime(bundleManager.getTimeUntilReset(player)));
                 }
-                break;
-                
-            case 48: // Back
-                player.closeInventory();
-                new MenuGUI(plugin, player).open();
-                break;
-                
-            case 49: // Close
-                player.closeInventory();
-                break;
+                return;
+            }
+        }
+
+        if (slot == GuiUtil.slot(plugin, "bundles", "back", 48, 54)) {
+            player.closeInventory();
+            new MenuGUI(plugin, player).open();
+        } else if (slot == GuiUtil.slot(plugin, "bundles", "close", 49, 54)) {
+            player.closeInventory();
         }
     }
     
@@ -148,44 +136,32 @@ public class BundleGUIListener implements Listener {
      * Handle clicks in the Bundle Detail GUI
      */
     private void handleBundleDetailClick(Player player, int slot) {
-        switch (slot) {
-            case 13: // Next reward (claim)
-            case 40: // Open bundle button
-                if (bundleManager.canClaimBundle(player)) {
-                    // Open the bundle and give reward
-                    boolean success = bundleManager.openBundle(player);
-                    
-                    if (success) {
-                        player.sendMessage("§8[§dBundles§8] §a§l✔ Bundle opened successfully!");
-                        player.sendMessage("§8[§dBundles§8] §eYou received your reward!");
-                        
-                        // Refresh the GUI
-                        player.closeInventory();
-                        
-                        // Check if they still have bundles available
-                        if (bundleManager.canClaimBundle(player)) {
-                            new BundleShopGUI(plugin, player).openBundleDetail();
-                        } else {
-                            new BundleShopGUI(plugin, player).open();
-                        }
+        if (slot == GuiUtil.slot(plugin, "bundle-rewards", "next-reward", 13, 54)
+            || slot == GuiUtil.slot(plugin, "bundle-rewards", "open", 40, 54)) {
+            if (bundleManager.canClaimBundle(player)) {
+                boolean success = bundleManager.openBundle(player);
+                if (success) {
+                    player.sendMessage("§8[§dBundles§8] §a§l✔ Bundle opened successfully!");
+                    player.sendMessage("§8[§dBundles§8] §eYou received your reward!");
+                    player.closeInventory();
+                    if (bundleManager.canClaimBundle(player)) {
+                        new BundleShopGUI(plugin, player).openBundleDetail();
                     } else {
-                        player.sendMessage("§8[§dBundles§8] §cFailed to open bundle!");
+                        new BundleShopGUI(plugin, player).open();
                     }
                 } else {
-                    player.sendMessage("§8[§dBundles§8] §cYou don't have any bundles available!");
-                    long timeUntil = bundleManager.getTimeUntilReset(player);
-                    player.sendMessage("§8[§dBundles§8] §7Next reset in: §e" + formatTime(timeUntil));
+                    player.sendMessage("§8[§dBundles§8] §cFailed to open bundle!");
                 }
-                break;
-                
-            case 48: // Back
-                player.closeInventory();
-                new BundleShopGUI(plugin, player).open();
-                break;
-                
-            case 49: // Close
-                player.closeInventory();
-                break;
+            } else {
+                player.sendMessage("§8[§dBundles§8] §cYou don't have any bundles available!");
+                long timeUntil = bundleManager.getTimeUntilReset(player);
+                player.sendMessage("§8[§dBundles§8] §7Next reset in: §e" + formatTime(timeUntil));
+            }
+        } else if (slot == GuiUtil.slot(plugin, "bundle-rewards", "back", 48, 54)) {
+            player.closeInventory();
+            new BundleShopGUI(plugin, player).open();
+        } else if (slot == GuiUtil.slot(plugin, "bundle-rewards", "close", 49, 54)) {
+            player.closeInventory();
         }
     }
     

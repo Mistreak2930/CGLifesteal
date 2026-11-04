@@ -23,27 +23,27 @@ public class HeartShopGUI {
     }
 
     public void open() {
-        Inventory inventory = Bukkit.createInventory(null, 54, "§c❤ Heart Emporium ❤");
+        Inventory inventory = GuiUtil.createInventory(plugin, "heartshop", 54, "<red><bold>Heart Shop</bold></red>");
 
-        ItemStack background = createPane((short) 15, " ");
+        ItemStack background = createPane(GuiUtil.material(plugin, "gui.theme.background", Material.BLACK_STAINED_GLASS_PANE), " ");
         for (int i = 0; i < 54; i++) {
             inventory.setItem(i, background);
         }
 
         // Top border - accent colors
-        ItemStack topAccent = createPane((short) 14, " ");
+        ItemStack topAccent = createPane(GuiUtil.material(plugin, "gui.theme.accent", Material.RED_STAINED_GLASS_PANE), " ");
         for (int i = 0; i < 9; i++) {
             inventory.setItem(i, topAccent);
         }
         
         // Bottom border - accent colors
-        ItemStack bottomAccent = createPane((short) 1, " ");
+        ItemStack bottomAccent = createPane(GuiUtil.material(plugin, "gui.theme.secondary", Material.GRAY_STAINED_GLASS_PANE), " ");
         for (int i = 45; i < 54; i++) {
             inventory.setItem(i, bottomAccent);
         }
 
         // Side dividers
-        ItemStack sideDivider = createPane((short) 7, " ");
+        ItemStack sideDivider = createPane(GuiUtil.material(plugin, "gui.theme.secondary", Material.GRAY_STAINED_GLASS_PANE), " ");
         for (int i = 9; i < 54; i += 9) {
             inventory.setItem(i, sideDivider);
             if (i + 8 < 54) {
@@ -62,7 +62,7 @@ public class HeartShopGUI {
 
         // Heart Shop Items - Arranged horizontally with better spacing
         // Economy Tier - 1 Heart
-        inventory.setItem(19, createShopItem(Material.REDSTONE, 1, "§c❤ Single Heart", 
+        inventory.setItem(GuiUtil.slot(plugin, "heartshop", "one-heart", 19, 54), createShopItem(Material.REDSTONE, 1, "§c❤ Single Heart",
             "§eAmount: §a1 Heart",
             "§ePrice: §6" + price1Heart + " Points",
             "§7Cost per heart: §a" + formatPerHeart(price1Heart, 1),
@@ -71,7 +71,7 @@ public class HeartShopGUI {
             "§7Left-click to purchase"));
 
         // Value Tier - 5 Hearts
-        inventory.setItem(22, createShopItem(Material.GOLD_INGOT, 5, "§6❤ Heart Bundle", 
+        inventory.setItem(GuiUtil.slot(plugin, "heartshop", "five-hearts", 22, 54), createShopItem(Material.GOLD_INGOT, 5, "§6❤ Heart Bundle",
             "§eAmount: §a5 Hearts",
             "§ePrice: §6" + price5Hearts + " Points",
             "§7Cost per heart: §a" + formatPerHeart(price5Hearts, 5),
@@ -80,7 +80,7 @@ public class HeartShopGUI {
             "§7Left-click to purchase"));
 
         // Premium Tier - 10 Hearts
-        inventory.setItem(25, createShopItem(Material.DIAMOND, 10, "§b❤ Heart Pack", 
+        inventory.setItem(GuiUtil.slot(plugin, "heartshop", "ten-hearts", 25, 54), createShopItem(Material.DIAMOND, 10, "§b❤ Heart Pack",
             "§eAmount: §a10 Hearts",
             "§ePrice: §6" + price10Hearts + " Points",
             "§7Cost per heart: §a" + formatPerHeart(price10Hearts, 10),
@@ -101,14 +101,14 @@ public class HeartShopGUI {
 
         // Close button
         ItemStack closeItem = createCloseItem();
-        inventory.setItem(49, closeItem);
+        inventory.setItem(GuiUtil.slot(plugin, "heartshop", "close", 49, 54), closeItem);
 
         player.openInventory(inventory);
         player.sendMessage(plugin.getMessageManager().getMessage("shop.opened"));
     }
 
-    private ItemStack createPane(short color, String name) {
-        ItemStack item = new ItemStack(Material.STAINED_GLASS_PANE, 1, color);
+    private ItemStack createPane(Material material, String name) {
+        ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(name);
@@ -196,7 +196,7 @@ public class HeartShopGUI {
     }
 
     private ItemStack createHelpItem() {
-        ItemStack item = new ItemStack(Material.BOOK_AND_QUILL);
+        ItemStack item = new ItemStack(Material.WRITABLE_BOOK);
         ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
